@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PacientesRoutingModule } from './pacientes-routing.module';
 import { ListarComponent } from './listar/listar.component';
 import { FormsModule } from '@angular/forms';
+import { FormComponent } from './form/form.component';
 
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +12,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { TagModule } from 'primeng/tag';
 
 @NgModule({
-  declarations: [ListarComponent],
+  declarations: [ListarComponent, FormComponent],
   imports: [
     CommonModule,
     FormsModule,

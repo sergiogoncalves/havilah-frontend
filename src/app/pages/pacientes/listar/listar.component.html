@@ -1,1 +1,45 @@
-<p>listar works!</p>
+<div class="pacientes-container">
+  <div class="p-grid">
+    <div class="p-col-12">
+      <h2>Pacientes</h2>
+
+      <div class="p-mb-3">
+        <button pButton type="button" label="Novo" class="p-button-success" (click)="navigateToNovo()"></button>
+      </div>
+
+      <div *ngIf="loading" class="p-mt-3">
+        <p>Carregando pacientes...</p>
+      </div>
+
+      <div *ngIf="error" class="p-mt-3 p-text-danger">
+        {{ error }}
+      </div>
+
+      <p-table *ngIf="!loading && !error" [value]="pacientes" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Data de Nascimento</th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-paciente>
+          <tr>
+            <td>{{ paciente.id }}</td>
+            <td>{{ paciente.fullName }}</td>
+            <td>{{ paciente.birthDate | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text" (click)="edit(paciente)"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4">Nenhum paciente encontrado.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

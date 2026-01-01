@@ -1,0 +1,26 @@
+<div class="p-grid">
+  <div class="p-col-12 p-md-6">
+    <h2>{{ isEdit ? 'Editar Paciente' : 'Novo Paciente' }}</h2>
+
+    <div *ngIf="loading">Carregando...</div>
+    <div *ngIf="error" class="p-text-danger">{{ error }}</div>
+
+    <div class="p-fluid p-formgrid p-grid">
+      <div class="p-field p-col-12">
+        <label for="fullName">Nome completo</label>
+        <input id="fullName" type="text" pInputText [(ngModel)]="paciente.fullName" name="fullName" />
+      </div>
+
+      <div class="p-field p-col-12">
+        <label for="birthDate">Data de Nascimento</label>
+        <input id="birthDate" type="date" pInputText [(ngModel)]="paciente.birthDate" name="birthDate" />
+      </div>
+
+      <div class="p-field p-col-12">
+        <button pButton type="button" label="Salvar" class="p-mr-2" (click)="save()"></button>
+        <button pButton type="button" label="Cancelar" class="p-button-secondary" (click)="cancel()"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
