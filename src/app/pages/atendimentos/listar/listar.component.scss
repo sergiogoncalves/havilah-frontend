@@ -1,0 +1,11 @@
+.atendimentos-container {
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.p-grid, .p-col-12 { width: 100% !important; }
+
+:host ::ng-deep p-table { width: 100%; }
+:host ::ng-deep .p-datatable-wrapper { overflow-x: auto; }
+

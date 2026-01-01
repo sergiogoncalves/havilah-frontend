@@ -30,7 +30,8 @@
             <td>{{ paciente.fullName }}</td>
             <td>{{ paciente.birthDate | date:'dd/MM/yyyy' }}</td>
             <td>
-              <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text" (click)="edit(paciente)"></button>
+              <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text" pTooltip="Editar paciente" tooltipPosition="top" title="Editar paciente" (click)="edit(paciente)"></button>
+              <button pButton type="button" icon="pi pi-file-import" class="p-button-rounded p-button-text"  pTooltip="Ver ficha do paciente" tooltipPosition="top" title="Ver a ficha do paciente" (click)="edit(paciente)"></button>
             </td>
           </tr>
         </ng-template>

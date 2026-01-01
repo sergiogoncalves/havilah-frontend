@@ -57,6 +57,35 @@
     opacity: 0.8;
   }
 
+  /* Main top menu styles */
+  .main-menu {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-left: 12px;
+  }
+
+  .main-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    opacity: 0.95;
+  }
+
+  .main-menu a:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .main-menu a.active {
+    background: rgba(255,255,255,0.14);
+  }
+
+  @media (max-width: 767px) {
+    .main-menu { display: none; }
+  }
+
   .content {
     /*display: flex;*/
     margin: 82px auto 32px;
@@ -291,6 +320,37 @@
       visibility: hidden;
     }
   }
+
+  /* mobile menu overlay */
+  .mobile-menu-button {
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 767px) {
+    .mobile-menu-button { display: block; }
+    .main-menu { display: none; }
+    .mobile-menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: #1976d2;
+      padding: 8px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+    }
+
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: white; padding: 8px; border-radius: 6px; text-decoration: none; }
+  }
 </style>
 
 <!-- Toolbar -->
@@ -301,16 +361,32 @@
     src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICA8cmVjdCB3aWR0aD0iMjUwIiBoZWlnaHQ9IjI1MCIgcng9IjQwIiBmaWxsPSIjMTExODI3Ii8+CiAgPHJlY3QgeD0iNjAiIHk9IjUwIiB3aWR0aD0iMzAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRkZGRkZGIi8+CiAgPHJlY3QgeD0iMTYwIiB5PSI1MCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI0ZGRkZGRiIvPgogIDxyZWN0IHg9IjkwIiB5PSIxMTAiIHdpZHRoPSI3MCIgaGVpZ2h0PSIzMCIgZmlsbD0iI0ZGRkZGRiIvPgo8L3N2Zz4="
   />
   <span>Bem vindo!</span>
-    <div class="spacer"></div>
+
+  <button class="mobile-menu-button" (click)="toggleMenu()" aria-label="Abrir menu">☰</button>
+
+  <nav class="main-menu" role="navigation" aria-label="Main menu">
+    <!-- Static fallback (kept for non-Angular navigation) -->
+    <!-- Dynamic menu rendered from AppComponent.menuItems via ngFor -->
+    <ng-container *ngFor="let item of menuItems">
+      <a *ngIf="!item.external" [routerLink]="item.route" routerLinkActive="active" (click)="closeMenu()">{{ item.label }}</a>
+      <a *ngIf="item.external" href="#" (click)="$event.preventDefault(); closeMenu()">{{ item.label }}</a>
+    </ng-container>
+  </nav>
+
+  <div class="spacer"></div>
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu" [class.open]="menuOpen">
+    <ng-container *ngFor="let item of menuItems">
+      <a *ngIf="!item.external" [routerLink]="item.route" (click)="closeMenu()">{{ item.label }}</a>
+      <a *ngIf="item.external" href="#" (click)="$event.preventDefault(); closeMenu()">{{ item.label }}</a>
+    </ng-container>
+  </div>
+
 </div>
 
 <div class="content" role="main">
 
-
-
   <router-outlet></router-outlet>
-
-
 
 </div>
 
@@ -321,5 +397,3 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-

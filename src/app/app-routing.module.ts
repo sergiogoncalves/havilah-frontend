@@ -8,6 +8,11 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/pacientes/pacientes.module').then(m => m.PacientesModule)
   },
+  {
+    path: 'atendimentos',
+    loadChildren: () =>
+      import('./pages/atendimentos/atendimentos.module').then(m => m.AtendimentosModule)
+  },
   { path: '**', redirectTo: 'pacientes' }
 ];
 
