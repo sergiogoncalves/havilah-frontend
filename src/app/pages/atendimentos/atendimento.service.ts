@@ -42,7 +42,21 @@ export class AtendimentoService {
   }
 
   getById(id: number): Observable<Atendimento> {
-    return this.http.get(`${this.baseUrl}/${id}`).pipe(
+    return this.http.get(`${this.baseUrl}/attendances/${id}`).pipe(
+      map((it: any) => this.parse(it))
+    );
+  }
+
+  // Create a new atendimento
+  create(payload: Partial<Atendimento>): Observable<Atendimento> {
+    return this.http.post<Atendimento>(this.baseUrl, payload).pipe(
+      map((it: any) => this.parse(it))
+    );
+  }
+
+  // Update an existing atendimento (payload must contain id)
+  update(payload: Partial<Atendimento>): Observable<Atendimento> {
+    return this.http.put<Atendimento>(`${this.baseUrl}/${payload.id}`, payload).pipe(
       map((it: any) => this.parse(it))
     );
   }
