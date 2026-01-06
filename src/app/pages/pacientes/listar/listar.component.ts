@@ -43,4 +43,13 @@ export class ListarComponent implements OnInit {
     this.router.navigate(['/pacientes', p.id]);
   }
 
+  // Navega para a lista de atendimentos já filtrada pelo paciente
+  goToAtendimentos(p: Paciente) {
+    // Passa paciente por query params para que a página de atendimentos
+    // preencha o filtro e selecione o paciente no select.
+    const queryParams: any = { patientId: p.id };
+    if (p.fullName) queryParams.patientName = p.fullName;
+    this.router.navigate(['/atendimentos'], { queryParams });
+  }
+
 }

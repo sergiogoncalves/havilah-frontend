@@ -1,10 +1,18 @@
 <div class="atendimentos-container">
   <div class="p-grid">
     <div class="p-col-12">
-      <h2>Atendimentos</h2>
 
-      <div class="p-mb-3">
-        <button pButton type="button" label="Novo" class="p-button-success" (click)="navigateToNovo()"></button>
+      <!-- Filters: patient combo and name search -->
+      <div class="p-grid p-ai-center p-mb-12">
+          <div class="p-col-12 p-md-12">
+            <fieldset class="p-fieldset" style="padding:0.5rem; border-radius:4px;">
+              <legend style="font-weight:600; padding:0 0.5rem;">Paciente</legend>
+                <select id="patientSelect" class="p-inputtext p-component" [(ngModel)]="selectedPatientId" (ngModelChange)="applyFilter()">
+                  <option [ngValue]="null">Todos</option>
+                  <option *ngFor="let p of pacientes" [ngValue]="p.id">{{ p.fullName }}</option>
+                </select>
+            </fieldset>
+          </div>
       </div>
 
       <div *ngIf="loading" class="p-mt-3">
