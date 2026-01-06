@@ -3,36 +3,39 @@
   <div *ngIf="error" class="p-text-danger">{{ error }}</div>
 
   <div *ngIf="!loading && atendimento">
-    <h2 *ngIf="atendimento.id === 0">Novo Atendimento</h2>
-    <h2 *ngIf="atendimento.id !== 0">Atendimento #{{ atendimento.id }}</h2>
+    <form #atForm="ngForm">
+      <h2 *ngIf="atendimento.id === 0">Novo Atendimento</h2>
+      <h2 *ngIf="atendimento.id !== 0">Atendimento #{{ atendimento.id }}</h2>
 
-    <div class="p-field p-grid">
-      <label class="p-col-12 p-md-2">Paciente</label>
-      <div class="p-col-12 p-md-10">
-        <select class="p-inputtext p-component" [(ngModel)]="atendimento.patientId">
-          <option [ngValue]="0">-- selecione --</option>
-          <option *ngFor="let p of pacientes" [ngValue]="p.id">{{ p.fullName }}</option>
-        </select>
+      <div class="p-field p-grid">
+        <label class="p-col-12 p-md-2">Paciente</label>
+        <div class="p-col-12 p-md-10">
+          <select name="patientId" class="p-inputtext p-component" [(ngModel)]="atendimento.patientId" required #patientIdCtrl="ngModel">
+            <option [ngValue]="0">-- selecione --</option>
+            <option *ngFor="let p of pacientes" [ngValue]="p.id">{{ p.fullName }}</option>
+          </select>
+          <div *ngIf="patientIdCtrl.invalid && (patientIdCtrl.dirty || patientIdCtrl.touched)" class="p-text-danger">Paciente é obrigatório.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="p-field p-grid">
-      <label class="p-col-12 p-md-2">Atendido em</label>
-      <div class="p-col-12 p-md-10">
-        <input type="datetime-local" class="p-inputtext" [(ngModel)]="attendedAtLocal" />
+      <div class="p-field p-grid">
+        <label class="p-col-12 p-md-2">Atendido em</label>
+        <div class="p-col-12 p-md-10">
+          <input type="datetime-local" class="p-inputtext" [(ngModel)]="attendedAtLocal" name="attendedAtLocal" />
+        </div>
       </div>
-    </div>
 
-    <div class="p-field p-grid">
-      <label class="p-col-12 p-md-2">Conteúdo (HTML)</label>
-      <div class="p-col-12 p-md-10">
-        <textarea rows="10" class="p-inputtextarea" [(ngModel)]="atendimento.contentHtml"></textarea>
+      <div class="p-field p-grid">
+        <label class="p-col-12 p-md-2">Conteúdo (HTML)</label>
+        <div class="p-col-12 p-md-10">
+          <textarea rows="10" class="p-inputtextarea" [(ngModel)]="atendimento.contentHtml" name="contentHtml"></textarea>
+        </div>
       </div>
-    </div>
 
-    <div class="p-mt-3">
-      <button pButton type="button" label="Salvar" icon="pi pi-check" (click)="save()" [disabled]="saving" class="p-button-success"></button>
-      <button pButton type="button" label="Voltar" icon="pi pi-arrow-left" (click)="back()" class="p-button-secondary p-ml-2"></button>
-    </div>
+      <div class="p-mt-3">
+        <button pButton type="button" label="Salvar" icon="pi pi-check" (click)="save(atForm)" [disabled]="saving" class="p-button-success"></button>
+        <button pButton type="button" label="Voltar" icon="pi pi-arrow-left" (click)="back()" class="p-button-secondary p-ml-2"></button>
+      </div>
+    </form>
   </div>
 </div>

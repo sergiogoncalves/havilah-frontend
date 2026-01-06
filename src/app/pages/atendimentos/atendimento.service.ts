@@ -47,15 +47,33 @@ export class AtendimentoService {
     );
   }
 
-  // Create a new atendimento
-  create(payload: Partial<Atendimento>): Observable<Atendimento> {
-    return this.http.post<Atendimento>(this.baseUrl, payload).pipe(
+  // Create a new atendimento. If patientId is provided, use the patient-specific endpoint
+  create(payload: Partial<Atendimento>, patientId?: number): Observable<Atendimento> {
+
+
+    const url = (payload.patientId != null)
+      ? `${this.baseUrl}/patients/${payload.patientId}/attendances`
+      : this.baseUrl;
+
+    return this.http.post<Atendimento>(url, payload).pipe(
       map((it: any) => this.parse(it))
     );
   }
 
-  // Update an existing atendimento (payload must contain id)
+  // Update an existing atendimento. When a patientId is available use the POST (create) endpoint
+  // to create/replace the attendance according to backend behavior; otherwise fall back to PUT by id.
   update(payload: Partial<Atendimento>): Observable<Atendimento> {
+    const patientId = (payload as any).patientId as number | undefined;
+
+    if (patientId != null) {
+      // Backend expects POST to /patients/{patientId}/attendances for creation
+      const url = `${this.baseUrl}/patients/${patientId}/attendances`;
+      return this.http.post<Atendimento>(url, payload).pipe(
+        map((it: any) => this.parse(it))
+      );
+    }
+
+    // Fallback to existing PUT behavior when no patientId is available
     return this.http.put<Atendimento>(`${this.baseUrl}/${payload.id}`, payload).pipe(
       map((it: any) => this.parse(it))
     );

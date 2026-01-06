@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
 import { AtendimentoService } from '../atendimento.service';
 import { Atendimento } from '../../../models/atendimento';
 import { Paciente } from '../../../models/paciente';
@@ -66,6 +67,8 @@ export class FormComponent implements OnInit {
     this.loading = true;
     this.service.getById(id).subscribe({
       next: (at) => {
+        // Ensure patientId is present (default to 0 so form validation kicks in)
+        at.patientId = (at.patientId ?? 0) as number;
         this.atendimento = at;
         this.attendedAtLocal = this.isoToLocal(at.attendedAt);
         this.loading = false;
@@ -104,10 +107,24 @@ export class FormComponent implements OnInit {
     this.router.navigate(['/atendimentos']);
   }
 
-  save() {
+  save(form?: NgForm) {
     if (!this.atendimento) return;
     this.saving = true;
     this.error = null;
+
+    // If template-driven form was passed, validate it
+    if (form && form.invalid) {
+      this.error = 'Por favor, preencha os campos obrigatórios.';
+      this.saving = false;
+      return;
+    }
+
+    // Ensure patientId is set and greater than 0
+    if (!this.atendimento.patientId || this.atendimento.patientId <= 0) {
+      this.error = 'Paciente é obrigatório.';
+      this.saving = false;
+      return;
+    }
 
     // Ensure attendedAt is converted from local input
     const iso = this.localToIso(this.attendedAtLocal);
@@ -118,10 +135,12 @@ export class FormComponent implements OnInit {
       contentHtml: this.atendimento.contentHtml ?? null
     };
 
+
+    console.log('Saving atendimento payload:', payload);
     const obs = (this.atendimento.id === 0) ? this.service.create(payload) : this.service.update(payload);
 
     obs.subscribe({
-      next: (saved) => {
+      next: () => {
         this.saving = false;
         // navigate to the list or to the saved atendimento view
         this.router.navigate(['/atendimentos']);
