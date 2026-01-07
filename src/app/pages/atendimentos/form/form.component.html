@@ -1,41 +1,76 @@
-<div class="atendimento-form">
-  <div *ngIf="loading">Carregando...</div>
-  <div *ngIf="error" class="p-text-danger">{{ error }}</div>
+<div class="atendimento-page">
+  <form #atForm="ngForm">
+  <!-- Topo interno (abaixo do header global) -->
+  <div class="atendimento-topo">
+    <!-- coloque aqui filtros, breadcrumbs, ações, status etc -->
+    <div class="topo-esquerda">Título / Paciente / Status</div>
+    <div class="topo-direita">Ações</div>
+  </div>
 
-  <div *ngIf="!loading && atendimento">
-    <form #atForm="ngForm">
-      <h2 *ngIf="atendimento.id === 0">Novo Atendimento</h2>
-      <h2 *ngIf="atendimento.id !== 0">Atendimento #{{ atendimento.id }}</h2>
 
-      <div class="p-field p-grid">
-        <label class="p-col-12 p-md-2">Paciente</label>
-        <div class="p-col-12 p-md-10">
-          <select name="patientId" class="p-inputtext p-component" [(ngModel)]="atendimento.patientId" required #patientIdCtrl="ngModel">
-            <option [ngValue]="0">-- selecione --</option>
-            <option *ngFor="let p of pacientes" [ngValue]="p.id">{{ p.fullName }}</option>
-          </select>
-          <div *ngIf="patientIdCtrl.invalid && (patientIdCtrl.dirty || patientIdCtrl.touched)" class="p-text-danger">Paciente é obrigatório.</div>
+    <!-- Área principal com 3 colunas -->
+    <div class="atendimento-corpo">
+      <section class="coluna coluna-1">
+        <div class="atendimento-form">
+          <div *ngIf="loading">Carregando...</div>
+          <div *ngIf="error" class="p-text-danger">{{ error }}</div>
+
+          <div *ngIf="!loading && atendimento">
+
+              <h2 *ngIf="atendimento.id === 0">Novo Atendimento</h2>
+              <h2 *ngIf="atendimento.id !== 0">Atendimento #{{ atendimento.id }}</h2>
+
+
+                <label class="p-col-12 p-md-2">Paciente</label>
+
+                  <select name="patientId" class="p-inputtext p-component" [(ngModel)]="atendimento.patientId" required #patientIdCtrl="ngModel">
+                    <option [ngValue]="0">-- selecione --</option>
+                    <option *ngFor="let p of pacientes" [ngValue]="p.id">{{ p.fullName }}</option>
+                  </select>
+                  <div *ngIf="patientIdCtrl.invalid && (patientIdCtrl.dirty || patientIdCtrl.touched)" class="p-text-danger">Paciente é obrigatório.</div>
+
+
+              <div class="p-field p-grid">
+                <label class="p-col-12 p-md-2">Atendido em</label>
+                <div class="p-col-12 p-md-10">
+                  <input type="datetime-local" class="p-inputtext" [(ngModel)]="attendedAtLocal" name="attendedAtLocal" />
+                </div>
+              </div>
+
+              <div class="p-field p-grid">
+                <label class="p-col-12 p-md-2">Conteúdo (HTML)</label>
+                <div class="p-col-12 p-md-10">
+                  <textarea rows="10" class="p-inputtextarea" [(ngModel)]="atendimento.contentHtml" name="contentHtml"></textarea>
+                </div>
+              </div>
+
+              <div class="p-mt-3">
+
+              </div>
+
+          </div>
         </div>
-      </div>
 
-      <div class="p-field p-grid">
-        <label class="p-col-12 p-md-2">Atendido em</label>
-        <div class="p-col-12 p-md-10">
-          <input type="datetime-local" class="p-inputtext" [(ngModel)]="attendedAtLocal" name="attendedAtLocal" />
-        </div>
-      </div>
+      </section>
 
-      <div class="p-field p-grid">
-        <label class="p-col-12 p-md-2">Conteúdo (HTML)</label>
-        <div class="p-col-12 p-md-10">
-          <textarea rows="10" class="p-inputtextarea" [(ngModel)]="atendimento.contentHtml" name="contentHtml"></textarea>
-        </div>
-      </div>
+      <section class="coluna coluna-2">
+        Conteúdo coluna 2
+      </section>
 
-      <div class="p-mt-3">
+      <section class="coluna coluna-3">
+        Conteúdo coluna 3
+      </section>
+    </div>
+    <!-- Topo interno (abaixo do header global) -->
+    <div class="atendimento-topo">
+      <!-- coloque aqui filtros, breadcrumbs, ações, status etc -->
+      <div class="topo-esquerda">
+
         <button pButton type="button" label="Salvar" icon="pi pi-check" (click)="save(atForm)" [disabled]="saving" class="p-button-success"></button>
         <button pButton type="button" label="Voltar" icon="pi pi-arrow-left" (click)="back()" class="p-button-secondary p-ml-2"></button>
+
       </div>
-    </form>
-  </div>
+      <div class="topo-direita">Ações</div>
+    </div>
+  </form>
 </div>
