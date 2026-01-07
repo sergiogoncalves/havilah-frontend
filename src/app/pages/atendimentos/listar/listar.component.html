@@ -34,7 +34,6 @@
             <th>ID</th>
             <th>Paciente ID</th>
             <th>Atendido em</th>
-            <th>Conteúdo</th>
             <th>Ações</th>
           </tr>
         </ng-template>
@@ -43,7 +42,6 @@
             <td>{{ a.id }}</td>
             <td>{{ a.patientId }}</td>
             <td>{{ a.attendedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td [innerHTML]="sanitizedContent(a)"></td>
             <td>
               <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-text" pTooltip="Ver atendimento" tooltipPosition="top" (click)="view(a)"></button>
             </td>
