@@ -11,6 +11,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { QuillModule } from 'ngx-quill';
+import { DropdownModule } from 'primeng/dropdown';
+
 
 
 @NgModule({
@@ -24,7 +26,8 @@ import { QuillModule } from 'ngx-quill';
     TooltipModule,
     InputTextModule,
     InputTextareaModule,
-    QuillModule
+    QuillModule,
+    DropdownModule
   ]
 })
 export class AtendimentosModule { }

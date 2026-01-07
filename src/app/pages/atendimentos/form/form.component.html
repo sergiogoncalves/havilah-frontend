@@ -1,83 +1,102 @@
-<div class="atendimento-page">
-  <form #atForm="ngForm">
-  <!-- Topo interno (abaixo do header global) -->
-  <div class="atendimento-topo">
-    <!-- coloque aqui filtros, breadcrumbs, ações, status etc -->
-    <div class="topo-esquerda">Título / Paciente / Status</div>
-    <div class="topo-direita">Ações</div>
-  </div>
+<div class="atendimentos-page">
+  <form #atForm="ngForm" class="atendimento-form">
 
+    <!-- Barra sticky (topo centralizado) -->
+    <div class="actions-bar" *ngIf="!loading">
+      <button
+        pButton
+        type="button"
+        label="Salvar"
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="save(atForm)"
+        [disabled]="saving">
+      </button>
 
-    <!-- Área principal com 3 colunas -->
-    <div class="atendimento-corpo">
-      <section class="coluna coluna-1">
-        <div class="atendimento-form">
-          <div *ngIf="loading">Carregando...</div>
-          <div *ngIf="error" class="p-text-danger">{{ error }}</div>
+      <button
+        pButton
+        type="button"
+        label="Novo"
+        icon="pi pi-plus"
+        class="p-button-info"
+        (click)="newRecord(atForm)"
+        [disabled]="saving">
+      </button>
 
-          <div *ngIf="!loading && atendimento">
+      <button
+        pButton
+        type="button"
+        label="Voltar"
+        icon="pi pi-arrow-left"
+        class="p-button-secondary"
+        (click)="back()">
+      </button>
+    </div>
 
-              <h2 *ngIf="atendimento.id === 0">Novo Atendimento</h2>
-              <h2 *ngIf="atendimento.id !== 0">Atendimento #{{ atendimento.id }}</h2>
+    <!-- Conteúdo rolável -->
+    <div class="form-scroll">
 
+      <div *ngIf="loading && !atendimento">Carregando...</div>
+      <div *ngIf="error" class="p-text-danger">{{ error }}</div>
 
-                <label class="p-col-12 p-md-2">Paciente</label>
+      <ng-container *ngIf="atendimento">
+        <div *ngIf="!pacientesLoaded" class="p-text-info">Carregando pacientes...</div>
+        <div *ngIf="pacientesLoaded && pacientes.length === 0" class="p-text-warning">Nenhum paciente disponível.</div>
 
-                  <select name="patientId" class="p-inputtext p-component" [(ngModel)]="atendimento.patientId" required #patientIdCtrl="ngModel">
-                    <option [ngValue]="0">-- selecione --</option>
-                    <option *ngFor="let p of pacientes" [ngValue]="p.id">{{ p.fullName }}</option>
-                  </select>
-                  <div *ngIf="patientIdCtrl.invalid && (patientIdCtrl.dirty || patientIdCtrl.touched)" class="p-text-danger">Paciente é obrigatório.</div>
+        <!-- Paciente -->
+        <div class="form-field">
+          <label>Paciente </label>
 
+          <p-dropdown
+            #patientDropdown
+            name="patientId"
+            [(ngModel)]="atendimento.patientId"
+            [options]="pacientes"
+            optionLabel="fullName"
+            optionValue="id"
+            placeholder="-- selecione --"
+            [filter]="true"
+            filterBy="fullName"
+            [showClear]="true"
+            [disabled]="isEditMode"
+            [style]="{ width: '100%' }"
+            [styleClass]="'w-full'"
+            [virtualScroll]="pacientes.length > 10"
+            (onShow)="onDropdownShow()"
+            (onHide)="onDropdownHide()">
+          </p-dropdown>
 
-              <div class="p-field p-grid">
-                <label class="p-col-12 p-md-2">Atendido em</label>
-                <div class="p-col-12 p-md-10">
-                  <input type="datetime-local" class="p-inputtext" [(ngModel)]="attendedAtLocal" name="attendedAtLocal" />
-                </div>
-              </div>
-
-              <div class="p-field p-grid">
-                <label class="p-col-12 p-md-2">Conteúdo (HTML)</label>
-                <div class="p-col-12 p-md-10">
-
-                  <quill-editor
-                    [(ngModel)]="atendimento.contentHtml"
-                    name="contentHtml"
-                    [modules]="quillModules"
-                    [styles]="{ height: '250px' }"
-                    placeholder="Digite...">
-                  </quill-editor>
-                </div>
-              </div>
-
-              <div class="p-mt-3">
-
-              </div>
-
+          <div *ngIf="atForm.submitted && isPatientInvalid()" class="p-text-danger">
+            Paciente é obrigatório.
           </div>
+
+          <small *ngIf="isEditMode" class="hint">
+            O paciente não pode ser alterado durante a edição.
+          </small>
         </div>
 
-      </section>
+        <!-- Atendido em -->
+        <div class="form-field">
+          <label>Atendido em</label>
+          <input
+            type="datetime-local"
+            class="p-inputtext"
+            name="attendedAtLocal"
+            [(ngModel)]="attendedAtLocal" />
+        </div>
 
-      <section class="coluna coluna-2">
-        Conteúdo coluna 2
-      </section>
+        <!-- Editor -->
+        <div class="form-field form-editor">
+          <label>Conteúdo</label>
+          <quill-editor
+            name="contentHtml"
+            [(ngModel)]="atendimento.contentHtml"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
 
-      <section class="coluna coluna-3">
-        Conteúdo coluna 3
-      </section>
-    </div>
-    <!-- Topo interno (abaixo do header global) -->
-    <div class="atendimento-topo">
-      <!-- coloque aqui filtros, breadcrumbs, ações, status etc -->
-      <div class="topo-esquerda">
-
-        <button pButton type="button" label="Salvar" icon="pi pi-check" (click)="save(atForm)" [disabled]="saving" class="p-button-success"></button>
-        <button pButton type="button" label="Voltar" icon="pi pi-arrow-left" (click)="back()" class="p-button-secondary p-ml-2"></button>
-
-      </div>
-      <div class="topo-direita">Ações</div>
+      </ng-container>
     </div>
   </form>
 </div>

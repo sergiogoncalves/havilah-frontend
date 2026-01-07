@@ -1,57 +1,119 @@
-:host {
-  display: block;
-  height: 100%;
-  min-height: 0;
-}
+/* Se existe um header fixo no app, defina globalmente:
+   :root { --app-header-height: 64px; }
+*/
 
-::ng-deep .ql-container { height: 100%; }
-
-/* Container geral da tela */
-.atendimento-page {
-  /* ocupa a viewport; se seu header global tiver altura fixa, ajuste no calc */
-  height: calc(100vh - 64px); /* ajuste 64px para a altura real do seu topo global */
-  min-height: 0;
-
-  display: grid;
-  grid-template-rows: auto 1fr; /* topo interno + corpo */
-  gap: 12px;
-
-  padding: 12px;
-  box-sizing: border-box;
-}
-
-/* Topo interno */
-.atendimento-topo {
+.atendimentos-page {
+  width: 100%;
   display: flex;
+  justify-content: center;
+}
+
+/* Form 80% centralizado e com altura útil da viewport */
+.atendimento-form {
+  width: 80%;
+  max-width: 1200px;
+  height: calc(100vh - var(--app-header-height, 0px));
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+/* Barra sticky abaixo do topo */
+.actions-bar {
+  position: sticky;
+  top: var(--app-header-height, 0px);
+  z-index: 50;
+
+  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 0.75rem;
 
-  /* opcional: aparência de “barra” */
-  padding: 12px;
-  border-radius: 8px;
+  padding: 0.75rem 0;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* Corpo com 3 colunas */
-.atendimento-corpo {
-  min-height: 0;              /* essencial para scroll interno funcionar */
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
+/* Área rolável para manter a actions-bar fixa */
+.form-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* Cada coluna com scroll próprio */
-.coluna {
-  min-height: 0;
-  overflow: auto;             /* cada coluna rola sem quebrar a página */
-  border-radius: 8px;
-  padding: 12px;
-  box-sizing: border-box;
+.form-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Responsivo: em telas menores, empilha */
-@media (max-width: 1024px) {
-  .atendimento-corpo {
-    grid-template-columns: 1fr;
-  }
+.form-field label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
+
+.form-field input {
+  width: 100%;
+}
+
+.hint {
+  margin-top: 0.35rem;
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+
+/* Editor ocupa o resto do espaço */
+.form-editor {
+  flex: 1;
+  min-height: 320px;
+}
+
+.form-editor quill-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+/* Quill internals para altura dinâmica */
+:host ::ng-deep .ql-toolbar {
+  border-radius: 6px 6px 0 0;
+}
+
+:host ::ng-deep .ql-container {
+  flex: 1;
+  min-height: 260px;
+  border-radius: 0 0 6px 6px;
+}
+
+:host ::ng-deep .ql-editor {
+  height: 100%;
+}
+
+/* PrimeNG Dropdown Styles */
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+:host ::ng-deep .p-dropdown-panel {
+  z-index: 1000 !important;
+}
+
+:host ::ng-deep .p-dropdown-items-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+:host ::ng-deep .p-dropdown-item {
+  padding: 0.75rem;
+  cursor: pointer;
+}
+
+:host ::ng-deep .p-dropdown-item:hover {
+  background-color: #f3f3f3;
+}
+
