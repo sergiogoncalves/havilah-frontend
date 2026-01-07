@@ -27,6 +27,7 @@ export class FormComponent implements OnInit {
       [{ list: 'ordered' }, { list: 'bullet' }],
       [{ indent: '-1' }, { indent: '+1' }],
       [{ align: [] }],
+     // ['link', 'image'],
       ['link'],
       ['clean']
     ]
