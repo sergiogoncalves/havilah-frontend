@@ -4,6 +4,8 @@
   min-height: 0;
 }
 
+::ng-deep .ql-container { height: 100%; }
+
 /* Container geral da tela */
 .atendimento-page {
   /* ocupa a viewport; se seu header global tiver altura fixa, ajuste no calc */

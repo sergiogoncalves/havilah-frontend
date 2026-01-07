@@ -20,6 +20,18 @@ export class FormComponent implements OnInit {
   pacientes: Paciente[] = [];
   attendedAtLocal: string | null = null; // for datetime-local binding
 
+  quillModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ header: 1 }, { header: 2 }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ align: [] }],
+      ['link'],
+      ['clean']
+    ]
+  };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,

@@ -10,6 +10,8 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { QuillModule } from 'ngx-quill/quill';
+
 
 @NgModule({
   declarations: [ListarComponent, FormComponent],
@@ -21,7 +23,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     ButtonModule,
     TooltipModule,
     InputTextModule,
-    InputTextareaModule
+    InputTextareaModule,
+    QuillModule.forRoot()
   ]
 })
 export class AtendimentosModule { }

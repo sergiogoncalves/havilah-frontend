@@ -40,7 +40,14 @@
               <div class="p-field p-grid">
                 <label class="p-col-12 p-md-2">Conteúdo (HTML)</label>
                 <div class="p-col-12 p-md-10">
-                  <textarea rows="10" class="p-inputtextarea" [(ngModel)]="atendimento.contentHtml" name="contentHtml"></textarea>
+
+                  <quill-editor
+                    [(ngModel)]="atendimento.contentHtml"
+                    name="contentHtml"
+                    [modules]="quillModules"
+                    [styles]="{ height: '250px' }"
+                    placeholder="Digite...">
+                  </quill-editor>
                 </div>
               </div>
 
