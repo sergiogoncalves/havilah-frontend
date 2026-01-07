@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "havilah-frontend:build:production"
+              "buildTarget": "havilah-frontend:build:production"
             },
             "development": {
-              "browserTarget": "havilah-frontend:build:development"
+              "buildTarget": "havilah-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "havilah-frontend:build"
+            "buildTarget": "havilah-frontend:build"
           }
         },
         "test": {
