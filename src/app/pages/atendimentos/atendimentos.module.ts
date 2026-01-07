@@ -12,6 +12,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { QuillModule } from 'ngx-quill';
 import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
 
 
 
@@ -27,7 +28,8 @@ import { DropdownModule } from 'primeng/dropdown';
     InputTextModule,
     InputTextareaModule,
     QuillModule,
-    DropdownModule
+    DropdownModule,
+    CalendarModule
   ]
 })
 export class AtendimentosModule { }

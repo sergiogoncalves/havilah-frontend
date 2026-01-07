@@ -7,6 +7,7 @@ import { AtendimentoService } from '../atendimento.service';
 import { Atendimento } from '../../../models/atendimento';
 import { Paciente } from '../../../models/paciente';
 import { PacienteService } from '../../pacientes/paciente.service';
+import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
   selector: 'app-atendimento-form',
@@ -23,7 +24,20 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   pacientes: Paciente[] = [];
   pacientesLoaded = false;
-  attendedAtLocal: string | null = null;
+  attendedAtLocal: Date | null = null;
+
+  // Locale config for PrimeNG Calendar in pt-BR
+  ptBrLocale = {
+    firstDayOfWeek: 0,
+    dayNames: ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'],
+    dayNamesShort: ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],
+    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+    monthNames: ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'],
+    monthNamesShort: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+    today: 'Hoje',
+    clear: 'Limpar',
+    dateFormat: 'dd/mm/yy'
+  };
 
   private destroy$ = new Subject<void>();
 
@@ -47,10 +61,14 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private service: AtendimentoService,
     private pacienteService: PacienteService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private primengConfig: PrimeNGConfig
   ) {}
 
   ngOnInit(): void {
+    // Apply global pt-BR translation for PrimeNG components
+    this.primengConfig.setTranslation(this.ptBrLocale);
+
     this.loadPacientes();
 
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -94,11 +112,17 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       id: 0,
       patientId: 0,
       attendedAt: new Date().toISOString(),
-      contentHtml: null,
+      descricaoSubjetiva: null,
+      objetivoPaciente: null,
+      planoTerapeutico: null,
+      anotacoesMedicas: null,
+      terapiaRealizada: null,
+      orcamento: null,
       patient: null
     };
 
-    this.attendedAtLocal = this.isoToLocal(this.atendimento.attendedAt);
+    // Bind Date to calendar
+    this.attendedAtLocal = this.isoToDate(this.atendimento.attendedAt);
     this.error = null;
     this.cdr.markForCheck();
   }
@@ -141,7 +165,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
           at.patientId = (at.patientId ?? 0) as number;
 
           this.atendimento = at;
-          this.attendedAtLocal = this.isoToLocal(at.attendedAt);
+          this.attendedAtLocal = this.isoToDate(at.attendedAt);
           this.loading = false;
           this.cdr.markForCheck();
         },
@@ -153,25 +177,17 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  isoToLocal(iso?: string | null): string | null {
+  // Convert ISO string to Date for calendar
+  isoToDate(iso?: string | null): Date | null {
     if (!iso) return null;
     const d = new Date(iso);
-    if (isNaN(d.getTime())) return null;
-
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const yyyy = d.getFullYear();
-    const MM = pad(d.getMonth() + 1);
-    const dd = pad(d.getDate());
-    const HH = pad(d.getHours());
-    const mm = pad(d.getMinutes());
-    return `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
+    return isNaN(d.getTime()) ? null : d;
   }
 
-  localToIso(local?: string | null): string | null {
-    if (!local) return null;
-    const d = new Date(local);
-    if (isNaN(d.getTime())) return null;
-    return d.toISOString();
+  // Convert Date back to ISO string
+  dateToIso(date?: Date | null): string | null {
+    if (!date) return null;
+    return date.toISOString();
   }
 
   isPatientInvalid(): boolean {
@@ -191,7 +207,12 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       form.resetForm({
         patientId: this.atendimento?.patientId ?? 0,
         attendedAtLocal: this.attendedAtLocal,
-        contentHtml: this.atendimento?.contentHtml ?? null
+        descricaoSubjetiva: this.atendimento?.descricaoSubjetiva,
+        objetivoPaciente: this.atendimento?.objetivoPaciente,
+        planoTerapeutico: this.atendimento?.planoTerapeutico,
+        anotacoesMedicas: this.atendimento?.anotacoesMedicas,
+        terapiaRealizada: this.atendimento?.terapiaRealizada,
+        orcamento: this.atendimento?.orcamento
       });
     }
   }
@@ -226,14 +247,23 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const iso = this.localToIso(this.attendedAtLocal);
+    // Convert selected Date to ISO
+    const iso = this.dateToIso(this.attendedAtLocal);
 
     const payload: Partial<Atendimento> = {
       id: this.atendimento.id,
       patientId: this.atendimento.patientId,
       attendedAt: iso ?? this.atendimento.attendedAt,
-      contentHtml: this.atendimento.contentHtml ?? null
+      descricaoSubjetiva: this.atendimento.descricaoSubjetiva,
+      objetivoPaciente: this.atendimento.objetivoPaciente,
+      planoTerapeutico: this.atendimento.planoTerapeutico,
+      anotacoesMedicas: this.atendimento.anotacoesMedicas,
+      terapiaRealizada: this.atendimento.terapiaRealizada,
+      orcamento: this.atendimento.orcamento
     };
+
+    alert(this.isEditMode ? 'Atualizando atendimento...' : 'Criando novo atendimento...');
+    alert(this.atendimento.id);
 
     const obs = (this.isEditMode && this.atendimento.id !== 0)
       ? this.service.update(payload)
@@ -251,4 +281,3 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 }
-

@@ -18,3 +18,11 @@
   flex-direction: column;
   align-items: center;
 }
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: var(--surface-hover, #f4f4f5);
+}

@@ -8,8 +8,9 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class AtendimentoService {
-  // Use Portuguese endpoint path to match the app's routes
-  private baseUrl = `${environment.apiUrl}/attendances`;
+  // Base API paths
+  private attendancesBase = `${environment.apiUrl}/attendances`;
+  private patientsBase = `${environment.apiUrl}/patients`;
 
   constructor(private http: HttpClient) { }
 
@@ -24,7 +25,7 @@ export class AtendimentoService {
   getAll(filters?: { patientId?: number; patientName?: string }): Observable<Atendimento[]> {
     // If a patientId is provided, call the patient-specific endpoint
     if (filters && filters.patientId != null) {
-      const url = `${this.baseUrl}/patients/${filters.patientId}/attendances`;
+      const url = `${this.attendancesBase}/patients/${filters.patientId}/attendances`;
       return this.http.get<Atendimento[]>(url).pipe(
         map((items: any[]) => items.map(it => this.parse(it)))
       );
@@ -36,45 +37,49 @@ export class AtendimentoService {
       params = params.set('patientName', filters.patientName);
     }
 
-    return this.http.get<Atendimento[]>(this.baseUrl, { params }).pipe(
+    return this.http.get<Atendimento[]>(this.attendancesBase, { params }).pipe(
       map((items: any[]) => items.map(it => this.parse(it)))
     );
   }
 
   getById(id: number): Observable<Atendimento> {
-    return this.http.get(`${this.baseUrl}/attendances/${id}`).pipe(
+    return this.http.get(`${this.attendancesBase}/attendances/${id}`).pipe(
       map((it: any) => this.parse(it))
     );
   }
 
   // Create a new atendimento. If patientId is provided, use the patient-specific endpoint
-  create(payload: Partial<Atendimento>, patientId?: number): Observable<Atendimento> {
-
-
+  create(payload: Partial<Atendimento>): Observable<Atendimento> {
     const url = (payload.patientId != null)
-      ? `${this.baseUrl}/patients/${payload.patientId}/attendances`
-      : this.baseUrl;
+      ? `${this.patientsBase}/${payload.patientId}/attendances`
+      : this.attendancesBase;
 
     return this.http.post<Atendimento>(url, payload).pipe(
       map((it: any) => this.parse(it))
     );
   }
 
-  // Update an existing atendimento. When a patientId is available use the POST (create) endpoint
-  // to create/replace the attendance according to backend behavior; otherwise fall back to PUT by id.
+  // Update an existing atendimento using PATCH to /attendances/{attendanceId}/content
+  // Sends only public content fields expected by the backend DTO (AttendancePublicContentUpdateDto)
   update(payload: Partial<Atendimento>): Observable<Atendimento> {
-    const patientId = (payload as any).patientId as number | undefined;
-
-    if (patientId != null) {
-      // Backend expects POST to /patients/{patientId}/attendances for creation
-      const url = `${this.baseUrl}/patients/${patientId}/attendances`;
-      return this.http.post<Atendimento>(url, payload).pipe(
-        map((it: any) => this.parse(it))
-      );
+    const attendanceId = payload.id as number | undefined;
+    if (attendanceId == null) {
+      throw new Error('Attendance ID (payload.id) is required to update content');
     }
 
-    // Fallback to existing PUT behavior when no patientId is available
-    return this.http.put<Atendimento>(`${this.baseUrl}/${payload.id}`, payload).pipe(
+    const url = `${this.attendancesBase}/attendances/${attendanceId}/content`;
+
+    // Map payload properties to backend DTO field names
+    const body: any = {
+      descricaoSubjetiva: (payload as any).descricaoSubjetiva,
+      objetivoPaciente: (payload as any).objetivoPaciente,
+      planoTerapeutico: (payload as any).planoTerapeutico,
+      anotacoesMedicas: (payload as any).anotacoesMedicas,
+      terapiaRealizada: (payload as any).terapiaRealizada,
+      orcamento: (payload as any).orcamento
+    };
+
+    return this.http.patch<Atendimento>(url, body).pipe(
       map((it: any) => this.parse(it))
     );
   }

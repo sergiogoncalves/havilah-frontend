@@ -129,8 +129,32 @@ export class ListarComponent implements OnInit {
     this.router.navigate(['/atendimentos', a.id]);
   }
 
-  sanitizedContent(a: Atendimento): SafeHtml | null {
-    if (!a || !a.contentHtml) return null;
-    return this.sanitizer.bypassSecurityTrustHtml(a.contentHtml);
+  private sanitize(value?: string | null): SafeHtml | null {
+    if (!value) return null;
+    return this.sanitizer.bypassSecurityTrustHtml(value);
+  }
+
+  sanitizedDescricaoSubjetiva(a: Atendimento): SafeHtml | null {
+    return this.sanitize(a?.descricaoSubjetiva);
+  }
+
+  sanitizedObjetivoPaciente(a: Atendimento): SafeHtml | null {
+    return this.sanitize(a?.objetivoPaciente);
+  }
+
+  sanitizedPlanoTerapeutico(a: Atendimento): SafeHtml | null {
+    return this.sanitize(a?.planoTerapeutico);
+  }
+
+  sanitizedAnotacoesMedicas(a: Atendimento): SafeHtml | null {
+    return this.sanitize(a?.anotacoesMedicas);
+  }
+
+  sanitizedTerapiaRealizada(a: Atendimento): SafeHtml | null {
+    return this.sanitize(a?.terapiaRealizada);
+  }
+
+  sanitizedOrcamento(a: Atendimento): SafeHtml | null {
+    return this.sanitize(a?.orcamento);
   }
 }

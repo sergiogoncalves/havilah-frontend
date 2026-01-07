@@ -78,19 +78,75 @@
         <!-- Atendido em -->
         <div class="form-field">
           <label>Atendido em</label>
-          <input
-            type="datetime-local"
-            class="p-inputtext"
+          <p-calendar
             name="attendedAtLocal"
-            [(ngModel)]="attendedAtLocal" />
+            [(ngModel)]="attendedAtLocal"
+            [showTime]="true"
+            hourFormat="24"
+            [touchUI]="true"
+            [locale]="ptBrLocale"
+            dateFormat="dd/mm/yy"
+            [style]="{ width: '100%' }"
+            [styleClass]="'w-full'">
+          </p-calendar>
         </div>
 
         <!-- Editor -->
         <div class="form-field form-editor">
-          <label>Conteúdo</label>
+          <label>Descrição Subjetiva - Relato do Paciente</label>
           <quill-editor
-            name="contentHtml"
-            [(ngModel)]="atendimento.contentHtml"
+            name="relatoPaciente"
+            [(ngModel)]="atendimento.descricaoSubjetiva"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
+
+        <div class="form-field form-editor">
+          <label>Objetivo do paciente</label>
+          <quill-editor
+            name="objetivoPaciente"
+            [(ngModel)]="atendimento.objetivoPaciente"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
+
+        <div class="form-field form-editor">
+          <label>Plano Terapêutico</label>
+          <quill-editor
+            name="planoTerapeutico"
+            [(ngModel)]="atendimento.planoTerapeutico"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
+
+        <div class="form-field form-editor">
+          <label>Anotações de enfermagem</label>
+          <quill-editor
+            name="anotacoesMedicas"
+            [(ngModel)]="atendimento.anotacoesMedicas"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
+
+        <div class="form-field form-editor">
+          <label>Terapia Realizada</label>
+          <quill-editor
+            name="terapiaRealizada"
+            [(ngModel)]="atendimento.terapiaRealizada"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
+
+        <div class="form-field form-editor">
+          <label>Orçamento</label>
+          <quill-editor
+            name="orcamento"
+            [(ngModel)]="atendimento.orcamento"
             [modules]="quillModules"
             placeholder="Digite...">
           </quill-editor>

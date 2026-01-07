@@ -43,7 +43,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th>ID</th>
-            <th>Paciente ID</th>
+            <th>Paciente</th>
             <th>Atendido em</th>
             <th>Ações</th>
           </tr>
@@ -51,7 +51,7 @@
         <ng-template pTemplate="body" let-a>
           <tr>
             <td>{{ a.id }}</td>
-            <td>{{ a.patientId }}</td>
+            <td>{{ a.patient.fullName }}</td>
             <td>{{ a.attendedAt | date:'dd/MM/yyyy HH:mm' }}</td>
             <td>
               <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-text" pTooltip="Ver atendimento" tooltipPosition="top" (click)="view(a)"></button>
