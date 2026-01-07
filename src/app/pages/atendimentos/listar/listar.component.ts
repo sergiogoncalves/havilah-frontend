@@ -105,6 +105,15 @@ export class ListarComponent implements OnInit {
     // load() will be triggered by route.queryParamMap subscription
   }
 
+  onPatientFilterChange() {
+    // Se selectedPatientId for null, significa que o dropdown foi limpo
+    if (this.selectedPatientId === null || this.selectedPatientId === undefined) {
+      this.clearFilter();
+    } else {
+      this.applyFilter();
+    }
+  }
+
   clearFilter() {
     this.selectedPatientId = null;
     this.patientNameFilter = '';
