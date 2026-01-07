@@ -10,7 +10,6 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
-import { QuillModule } from 'ngx-quill/quill';
 
 
 @NgModule({
@@ -23,8 +22,7 @@ import { QuillModule } from 'ngx-quill/quill';
     ButtonModule,
     TooltipModule,
     InputTextModule,
-    InputTextareaModule,
-    QuillModule.forRoot()
+    InputTextareaModule
   ]
 })
 export class AtendimentosModule { }
