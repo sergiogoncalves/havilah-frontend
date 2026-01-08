@@ -51,7 +51,7 @@ export class AtendimentoService {
   // Create a new atendimento. If patientId is provided, use the patient-specific endpoint
   create(payload: Partial<Atendimento>): Observable<Atendimento> {
     const url = (payload.patientId != null)
-      ? `${this.patientsBase}/${payload.patientId}/attendances`
+      ? `${this.attendancesBase}/patients/${payload.patientId}/attendances`
       : this.attendancesBase;
 
     return this.http.post<Atendimento>(url, payload).pipe(
