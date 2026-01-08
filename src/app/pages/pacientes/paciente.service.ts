@@ -37,6 +37,8 @@ export class PacienteService {
       birthDate: payload.birthDate ? (payload.birthDate instanceof Date ? payload.birthDate.toISOString().substring(0, 10) : String(payload.birthDate).substring(0, 10)) : null,
       cpf: payload.cpf || null,
       contacts: Array.isArray(payload.contacts) ? payload.contacts.map(c => ({
+        // include id for updates of existing contacts; omit if undefined
+        id: c.id ?? undefined,
         type: c.type,
         value: c.value,
         primary: c.primary
