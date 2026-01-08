@@ -47,6 +47,41 @@
   margin-bottom: 0.5rem;
 }
 
+/* Espaçamento entre os contatos */
+.contact-row { margin-bottom: 1rem; }
+
+/* Contacts row as CSS grid: tipo (3), valor (6), principal (2), excluir (1) */
+.contact-row-flex {
+  display: grid;
+  grid-template-columns: 3fr 6fr 2fr 1fr;
+  grid-column-gap: 0.5rem;
+  align-items: center;
+}
+
+/* Full width inner controls */
+.contact-row-flex > div > .p-inputtext,
+.contact-row-flex > div > p-dropdown,
+.contact-row-flex > div > .p-element {
+  width: 100%;
+}
+
+/* Right-align delete */
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Stacks on very small screens */
+@media (max-width: 576px) {
+  .contact-row-flex {
+    grid-template-columns: 1fr;
+    grid-row-gap: 0.5rem;
+  }
+  .actions-cell {
+    justify-content: flex-start;
+  }
+}
+
 /* compat: regras antigas */
 .p-field { margin-bottom: 1rem; }
 

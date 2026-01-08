@@ -13,6 +13,7 @@ import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TooltipModule } from 'primeng/tooltip';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
   declarations: [ListarComponent, FormComponent],
@@ -27,7 +28,8 @@ import { TooltipModule } from 'primeng/tooltip';
     TagModule,
     DropdownModule,
     CheckboxModule,
-    TooltipModule
+    TooltipModule,
+    CalendarModule
   ]
 })
 export class PacientesModule { }

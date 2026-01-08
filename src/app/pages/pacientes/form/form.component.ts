@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./form.component.scss']
 })
 export class FormComponent implements OnInit {
-  paciente: Paciente = { id: 0, fullName: '', birthDate: '', cpf: '', contacts: [] } as Paciente;
+  paciente: Paciente = { id: 0, fullName: '', birthDate: null as any, cpf: '', contacts: [] } as Paciente;
   saving = false;
   loading = false;
   error: string | null = null;
@@ -95,7 +95,7 @@ export class FormComponent implements OnInit {
   }
 
   newRecord() {
-    this.paciente = { id: 0, fullName: '', birthDate: '', cpf: '', contacts: [this.blankContact(true)] } as Paciente;
+    this.paciente = { id: 0, fullName: '', birthDate: null as any, cpf: '', contacts: [this.blankContact(true)] } as Paciente;
     this.isEdit = false;
     this.error = null;
   }

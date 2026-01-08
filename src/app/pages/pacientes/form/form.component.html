@@ -41,31 +41,38 @@
         <input id="fullName" type="text" pInputText [(ngModel)]="paciente.fullName" name="fullName" />
       </div>
 
-      <div class="p-grid">
-        <div class="p-col-12 p-md-6 form-field">
+      <div class="p-grid p-mb-3">
+        <div class="p-col-12 p-md-6 form-field p-pr-3">
           <label for="birthDate">Data de Nascimento</label>
-          <input id="birthDate" type="date" pInputText [(ngModel)]="paciente.birthDate" name="birthDate" />
+          <p-calendar
+            inputId="birthDate"
+            [(ngModel)]="paciente.birthDate"
+            name="birthDate"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            [style]="{ width: '100%' }"
+            [inputStyle]="{ width: '100%' }"></p-calendar>
         </div>
 
-        <div class="p-col-12 p-md-6 form-field">
+        <div class="p-col-12 p-md-6 form-field p-pl-3">
           <label for="cpf">CPF</label>
-          <input id="cpf" type="text" maxlength="14" pInputText [(ngModel)]="paciente.cpf" name="cpf" placeholder="Somente números" />
+          <input id="cpf" type="text" maxlength="14" pInputText [(ngModel)]="paciente.cpf" name="cpf" placeholder="Somente números" style="width: 100%;" />
         </div>
       </div>
 
       <div class="form-field">
         <label>Contatos</label>
-        <div class="p-grid p-ai-center p-mb-2" *ngFor="let c of paciente.contacts; let i = index">
-          <div class="p-col-12 p-md-3">
-            <p-dropdown [options]="contactTypes" [(ngModel)]="c.type" name="type-{{i}}" optionLabel="label" optionValue="value" placeholder="Tipo"></p-dropdown>
+        <div class="contact-row contact-row-flex" *ngFor="let c of paciente.contacts; let i = index">
+          <div>
+            <p-dropdown [options]="contactTypes" [(ngModel)]="c.type" name="type-{{i}}" optionLabel="label" optionValue="value" placeholder="Tipo" [style]="{ width: '100%' }"></p-dropdown>
           </div>
-          <div class="p-col-12 p-md-6">
-            <input type="text" pInputText [(ngModel)]="c.value" name="value-{{i}}" placeholder="Valor (telefone, e-mail...)" />
+          <div>
+            <input type="text" pInputText [(ngModel)]="c.value" name="value-{{i}}" placeholder="Valor (telefone, e-mail...)" style="width: 100%;" />
           </div>
-          <div class="p-col-6 p-md-2">
+          <div class="checkbox-cell">
             <p-checkbox binary="true" [(ngModel)]="c.primary" name="primary-{{i}}" (onChange)="setPrimary(i)" inputId="primary-{{i}}" [trueValue]="true" [falseValue]="false" label="Principal"></p-checkbox>
           </div>
-          <div class="p-col-6 p-md-1">
+          <div class="actions-cell">
             <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="removeContact(i)"></button>
           </div>
         </div>
