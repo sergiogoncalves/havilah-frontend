@@ -1,10 +1,8 @@
-<div class="pacientes-container">
+<div class="atendimentos-container">
   <div class="p-grid">
     <div class="p-col-12">
-      <h2>Pacientes</h2>
-
-      <div class="p-mb-3">
-        <button pButton type="button" label="Novo" class="p-button-success" (click)="navigateToNovo()"></button>
+      <div class="p-mb-3" style="text-align: right;">
+        <button pButton type="button" label="Novo" icon="pi pi-plus" class="p-button-sm" (click)="navigateToNovo()"></button>
       </div>
 
       <div *ngIf="loading" class="p-mt-3">
@@ -20,6 +18,7 @@
           <tr>
             <th>ID</th>
             <th>Nome</th>
+            <th>CPF</th>
             <th>Data de Nascimento</th>
             <th>Ações</th>
           </tr>
@@ -27,17 +26,22 @@
         <ng-template pTemplate="body" let-paciente>
           <tr>
             <td>{{ paciente.id }}</td>
-            <td>{{ paciente.fullName }}</td>
+            <td>
+              <div>
+                {{ paciente.fullName }}
+              </div>
+            </td>
+            <td>{{ formatCpf(paciente.cpf) }}</td>
             <td>{{ paciente.birthDate | date:'dd/MM/yyyy' }}</td>
             <td>
-              <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text" pTooltip="Editar paciente" tooltipPosition="top" title="Editar paciente" (click)="edit(paciente)"></button>
-              <button pButton type="button" icon="pi pi-file-import" class="p-button-rounded p-button-text"  pTooltip="Ver ficha do paciente" tooltipPosition="top" title="Ver a ficha do paciente" (click)="goToAtendimentos(paciente)"></button>
+              <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text" title="Editar paciente" (click)="edit(paciente)"></button>
+              <button pButton type="button" icon="pi pi-file-import" class="p-button-rounded p-button-text"  title="Ver a ficha do paciente" (click)="goToAtendimentos(paciente)"></button>
             </td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="4">Nenhum paciente encontrado.</td>
+            <td colspan="5">Nenhum paciente encontrado.</td>
           </tr>
         </ng-template>
       </p-table>

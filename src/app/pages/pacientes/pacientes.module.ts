@@ -10,6 +10,9 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TagModule } from 'primeng/tag';
+import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
   declarations: [ListarComponent, FormComponent],
@@ -21,7 +24,10 @@ import { TagModule } from 'primeng/tag';
     ButtonModule,
     InputTextModule,
     ToolbarModule,
-    TagModule
+    TagModule,
+    DropdownModule,
+    CheckboxModule,
+    TooltipModule
   ]
 })
 export class PacientesModule { }

@@ -1,4 +1,53 @@
-/* simple spacing for the form */
+/* Layout inspirado no atendimentos */
+.pacientes-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.paciente-form {
+  width: 80%;
+  max-width: 1200px;
+  height: calc(100vh - var(--app-header-height, 0px));
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.actions-bar {
+  position: sticky;
+  top: var(--app-header-height, 0px);
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.form-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* compat: regras antigas */
 .p-field { margin-bottom: 1rem; }
 
 .content {

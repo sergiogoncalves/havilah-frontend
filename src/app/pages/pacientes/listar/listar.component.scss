@@ -6,3 +6,11 @@
   flex-direction: column;
   align-items: center;
 }
+
+/* Harmonize with atendimentos list layout */
+.atendimentos-container {
+  /* reuse same class name for simplicity */
+}
+
+/* Keep any existing overrides if needed */
+.content { margin: 82px auto 32px; padding: 0 16px; max-width: 960px; flex-direction: column; align-items: center; }

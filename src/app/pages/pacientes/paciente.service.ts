@@ -14,11 +14,33 @@ export class PacienteService {
   constructor(private http: HttpClient) { }
 
   private parse(item: any): Paciente {
+    const birthDate = typeof item.birthDate === 'string' && item.birthDate.length >= 10
+      ? new Date(item.birthDate.substring(0, 10) + 'T00:00:00')
+      : item.birthDate;
+
+    // Map cpf from possible backend fields and normalize
+    const rawCpf = item.cpf || item.document || item.documentNumber || item.taxId || null;
+    const cpf = rawCpf ? String(rawCpf).replace(/\D/g, '').slice(0, 11) : undefined;
+
     return {
       ...item,
-      birthDate: typeof item.birthDate === 'string' && item.birthDate.length === 10
-        ? new Date(item.birthDate + 'T00:00:00')
-        : item.birthDate
+      birthDate,
+      cpf,
+      contacts: Array.isArray(item.contacts) ? item.contacts : []
+    } as Paciente;
+  }
+
+  private toDto(payload: Paciente): any {
+    return {
+      id: payload.id || undefined,
+      fullName: payload.fullName,
+      birthDate: payload.birthDate ? (payload.birthDate instanceof Date ? payload.birthDate.toISOString().substring(0, 10) : String(payload.birthDate).substring(0, 10)) : null,
+      cpf: payload.cpf || null,
+      contacts: Array.isArray(payload.contacts) ? payload.contacts.map(c => ({
+        type: c.type,
+        value: c.value,
+        primary: c.primary
+      })) : []
     };
   }
 
@@ -34,12 +56,12 @@ export class PacienteService {
     );
   }
 
-  create(payload: any): Observable<any> {
-    return this.http.post(this.baseUrl, payload);
+  create(payload: Paciente): Observable<any> {
+    return this.http.post(this.baseUrl, this.toDto(payload));
   }
 
-  update(payload: any): Observable<any> {
+  update(payload: Paciente): Observable<any> {
     // payload should contain id
-    return this.http.put(`${this.baseUrl}/${payload.id}`, payload);
+    return this.http.put(`${this.baseUrl}/${payload.id}`, this.toDto(payload));
   }
 }

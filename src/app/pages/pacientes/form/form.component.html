@@ -1,26 +1,79 @@
-<div class="p-grid">
-  <div class="p-col-12 p-md-6">
-    <h2>{{ isEdit ? 'Editar Paciente' : 'Novo Paciente' }}</h2>
+<div class="pacientes-page">
+  <form class="paciente-form">
 
-    <div *ngIf="loading">Carregando...</div>
-    <div *ngIf="error" class="p-text-danger">{{ error }}</div>
+    <div class="actions-bar" *ngIf="!loading">
+      <button
+        pButton
+        type="button"
+        label="Salvar"
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="save()"
+        [disabled]="saving">
+      </button>
 
-    <div class="p-fluid p-formgrid p-grid">
-      <div class="p-field p-col-12">
+      <button
+        pButton
+        type="button"
+        label="Novo"
+        icon="pi pi-plus"
+        class="p-button-info"
+        (click)="newRecord()"
+        [disabled]="saving">
+      </button>
+
+      <button
+        pButton
+        type="button"
+        label="Voltar"
+        icon="pi pi-arrow-left"
+        class="p-button-secondary"
+        (click)="cancel()">
+      </button>
+    </div>
+
+    <div class="form-scroll">
+      <div *ngIf="loading">Carregando...</div>
+      <div *ngIf="error" class="p-text-danger">{{ error }}</div>
+
+      <div class="form-field">
         <label for="fullName">Nome completo</label>
         <input id="fullName" type="text" pInputText [(ngModel)]="paciente.fullName" name="fullName" />
       </div>
 
-      <div class="p-field p-col-12">
-        <label for="birthDate">Data de Nascimento</label>
-        <input id="birthDate" type="date" pInputText [(ngModel)]="paciente.birthDate" name="birthDate" />
+      <div class="p-grid">
+        <div class="p-col-12 p-md-6 form-field">
+          <label for="birthDate">Data de Nascimento</label>
+          <input id="birthDate" type="date" pInputText [(ngModel)]="paciente.birthDate" name="birthDate" />
+        </div>
+
+        <div class="p-col-12 p-md-6 form-field">
+          <label for="cpf">CPF</label>
+          <input id="cpf" type="text" maxlength="14" pInputText [(ngModel)]="paciente.cpf" name="cpf" placeholder="Somente números" />
+        </div>
       </div>
 
-      <div class="p-field p-col-12">
-        <button pButton type="button" label="Salvar" class="p-mr-2" (click)="save()"></button>
-        <button pButton type="button" label="Cancelar" class="p-button-secondary" (click)="cancel()"></button>
+      <div class="form-field">
+        <label>Contatos</label>
+        <div class="p-grid p-ai-center p-mb-2" *ngFor="let c of paciente.contacts; let i = index">
+          <div class="p-col-12 p-md-3">
+            <p-dropdown [options]="contactTypes" [(ngModel)]="c.type" name="type-{{i}}" optionLabel="label" optionValue="value" placeholder="Tipo"></p-dropdown>
+          </div>
+          <div class="p-col-12 p-md-6">
+            <input type="text" pInputText [(ngModel)]="c.value" name="value-{{i}}" placeholder="Valor (telefone, e-mail...)" />
+          </div>
+          <div class="p-col-6 p-md-2">
+            <p-checkbox binary="true" [(ngModel)]="c.primary" name="primary-{{i}}" (onChange)="setPrimary(i)" inputId="primary-{{i}}" [trueValue]="true" [falseValue]="false" label="Principal"></p-checkbox>
+          </div>
+          <div class="p-col-6 p-md-1">
+            <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="removeContact(i)"></button>
+          </div>
+        </div>
+        <div>
+          <button pButton type="button" label="Adicionar contato" icon="pi pi-plus" class="p-button-text" (click)="addContact()"></button>
+        </div>
       </div>
+
     </div>
-  </div>
+  </form>
 </div>
-
