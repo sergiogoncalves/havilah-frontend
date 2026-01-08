@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { PacienteService } from '../../pacientes/paciente.service';
 import { Paciente } from '../../../models/paciente';
+import { AlertService } from '../../../alert.service';
 
 @Component({
   selector: 'app-listar-atendimentos',
@@ -26,7 +27,8 @@ export class ListarComponent implements OnInit {
     private pacienteService: PacienteService,
     private router: Router,
     private route: ActivatedRoute,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private alerts: AlertService
   ) { }
 
   ngOnInit(): void {

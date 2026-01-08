@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Paciente, PatientContact, ContactType } from '../../../models/paciente';
 import { PacienteService } from '../paciente.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '../../../alert.service';
 
 @Component({
   selector: 'app-form',
@@ -21,7 +22,7 @@ export class FormComponent implements OnInit {
     { label: 'E-mail', value: 'EMAIL' }
   ];
 
-  constructor(private service: PacienteService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private service: PacienteService, private route: ActivatedRoute, private router: Router, private alerts: AlertService) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
@@ -85,8 +86,8 @@ export class FormComponent implements OnInit {
 
     const action = this.paciente.id ? this.service.update(this.paciente) : this.service.create(this.paciente);
     action.subscribe({
-      next: () => this.router.navigate(['/pacientes']),
-      error: () => this.saving = false
+      next: () => { this.alerts.success('Paciente salvo com sucesso'); this.router.navigate(['/pacientes']); },
+      error: () => { this.saving = false; this.alerts.error('Falha ao salvar paciente'); }
     });
   }
 

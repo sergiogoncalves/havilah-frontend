@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Paciente } from '../../../models/paciente';
 import { PacienteService } from '../paciente.service';
 import { Router } from '@angular/router';
+import { AlertService } from '../../../alert.service';
 
 @Component({
   selector: 'app-listar',
@@ -13,7 +14,7 @@ export class ListarComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private pacienteService: PacienteService, private router: Router) { }
+  constructor(private pacienteService: PacienteService, private router: Router, private alerts: AlertService) { }
 
   ngOnInit(): void {
     this.loadPacientes();

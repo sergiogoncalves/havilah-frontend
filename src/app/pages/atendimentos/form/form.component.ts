@@ -8,6 +8,8 @@ import { Atendimento } from '../../../models/atendimento';
 import { Paciente } from '../../../models/paciente';
 import { PacienteService } from '../../pacientes/paciente.service';
 import { PrimeNGConfig } from 'primeng/api';
+import { AlertService } from '../../../alert.service';
+import { primengPtBr } from '../../../core/locale/primeng-ptbr';
 
 @Component({
   selector: 'app-atendimento-form',
@@ -25,19 +27,6 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   pacientes: Paciente[] = [];
   pacientesLoaded = false;
   attendedAtLocal: Date | null = null;
-
-  // Locale config for PrimeNG Calendar in pt-BR
-  ptBrLocale = {
-    firstDayOfWeek: 0,
-    dayNames: ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'],
-    dayNamesShort: ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],
-    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
-    monthNames: ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'],
-    monthNamesShort: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
-    today: 'Hoje',
-    clear: 'Limpar',
-    dateFormat: 'dd/mm/yy'
-  };
 
   private destroy$ = new Subject<void>();
 
@@ -62,12 +51,13 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     private service: AtendimentoService,
     private pacienteService: PacienteService,
     private cdr: ChangeDetectorRef,
-    private primengConfig: PrimeNGConfig
+    private primengConfig: PrimeNGConfig,
+    private alerts: AlertService
   ) {}
 
   ngOnInit(): void {
     // Apply global pt-BR translation for PrimeNG components
-    this.primengConfig.setTranslation(this.ptBrLocale);
+    this.primengConfig.setTranslation(primengPtBr);
 
     this.loadPacientes();
 
@@ -262,9 +252,6 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       orcamento: this.atendimento.orcamento
     };
 
-    alert(this.isEditMode ? 'Atualizando atendimento...' : 'Criando novo atendimento...');
-    alert(this.atendimento.id);
-
     const obs = (this.isEditMode && this.atendimento.id !== 0)
       ? this.service.update(payload)
       : this.service.create(payload);
@@ -272,11 +259,13 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     obs.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.saving = false;
+        this.alerts.success('Atendimento salvo com sucesso');
         this.router.navigate(['/atendimentos']);
       },
       error: () => {
         this.error = 'Falha ao salvar atendimento.';
         this.saving = false;
+        this.alerts.error('Falha ao salvar atendimento');
       }
     });
   }
