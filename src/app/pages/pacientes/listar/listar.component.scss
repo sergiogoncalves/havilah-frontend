@@ -9,8 +9,33 @@
 
 /* Harmonize with atendimentos list layout */
 .atendimentos-container {
-  /* reuse same class name for simplicity */
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 1rem 0;
 }
 
 /* Keep any existing overrides if needed */
 .content { margin: 82px auto 32px; padding: 0 16px; max-width: 960px; flex-direction: column; align-items: center; }
+
+.p-grid, .p-col-12 { width: 100% !important; }
+
+:host ::ng-deep p-table { width: 100%; }
+:host ::ng-deep .p-datatable-wrapper { overflow-x: auto; }
+
+/* Keep previous content block if used elsewhere */
+.content {
+  /*display: flex;*/
+  margin: 82px auto 32px;
+  padding: 0 16px;
+  max-width: 960px;
+  flex-direction: column;
+  align-items: center;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: var(--surface-hover, #f4f4f5);
+}
