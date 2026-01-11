@@ -10,6 +10,7 @@ import { PacienteService } from '../../pacientes/paciente.service';
 import { PrimeNGConfig } from 'primeng/api';
 import { AlertService } from '../../../alert.service';
 import { primengPtBr } from '../../../core/locale/primeng-ptbr';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-atendimento-form',
@@ -52,7 +53,8 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     private pacienteService: PacienteService,
     private cdr: ChangeDetectorRef,
     private primengConfig: PrimeNGConfig,
-    private alerts: AlertService
+    private alerts: AlertService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -189,10 +191,23 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   newRecord(form?: NgForm) {
     // Se estiver editando, confirma antes de criar novo
     if (this.isEditMode) {
-      const confirmed = window.confirm('Deseja realmente fazer um novo atendimento? Você está editando um no momento.');
-      if (!confirmed) return;
+      this.confirmationService.confirm({
+        message: 'Deseja realmente fazer um novo atendimento? Você está editando um no momento.',
+        header: 'Confirmar novo atendimento',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim',
+        rejectLabel: 'Não',
+        accept: () => {
+          this.executeNewRecord(form);
+        }
+      });
+      return;
     }
 
+    this.executeNewRecord(form);
+  }
+
+  private executeNewRecord(form?: NgForm) {
     this.isEditMode = false;
     this.saving = false;
     this.error = null;
@@ -200,7 +215,6 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initNewAtendimento();
 
     if (form) {
-      // reseta estado do ngForm (touched/dirty) e valores
       form.resetForm({
         patientId: this.atendimento?.patientId ?? 0,
         attendedAtLocal: this.attendedAtLocal,
@@ -216,19 +230,33 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   back(form?: NgForm) {
-    // Confirmação dependendo do contexto
     if (this.isEditMode) {
-      const confirmed = window.confirm('Deseja realmente voltar? Você está editando um atendimento no momento.');
-      if (!confirmed) return;
-      this.router.navigate(['/atendimentos']);
+      this.confirmationService.confirm({
+        message: 'Deseja realmente voltar? Você está editando um atendimento no momento.',
+        header: 'Confirmar voltar',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim',
+        rejectLabel: 'Não',
+        accept: () => {
+          this.router.navigate(['/atendimentos']);
+        }
+      });
       return;
     }
 
-    // Se for novo registro e houver alterações, confirma
-    const isDirty = form ? form.dirty : true; // se não tiver form, por segurança, pergunta
+    const isDirty = form ? form.dirty : true;
     if (isDirty) {
-      const confirmed = window.confirm('Você está digitando um novo atendimento. Deseja realmente voltar?');
-      if (!confirmed) return;
+      this.confirmationService.confirm({
+        message: 'Você está digitando um novo atendimento. Deseja realmente voltar?',
+        header: 'Confirmar voltar',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim',
+        rejectLabel: 'Não',
+        accept: () => {
+          this.router.navigate(['/atendimentos']);
+        }
+      });
+      return;
     }
 
     this.router.navigate(['/atendimentos']);
