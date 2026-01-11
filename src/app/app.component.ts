@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  constructor(private router: Router) {}
+
   title = 'havilah-frontend';
 
   // Centralized menu configuration - add/remove items here
@@ -16,15 +19,16 @@ export class AppComponent {
       label: 'Opção',
       external: true,
       submenu: [
-        { label: 'Descrição subjetiva', key: 'descricaoSubjetiva' },
-        { label: 'Objetivo do paciente', key: 'objetivoPaciente' },
-        { label: 'Plano terapêutico', key: 'planoTerapeutico' },
-        { label: 'Anotações de enfermagem', key: 'anotacoesEnfermagem' },
-        { label: 'Terapia realizada', key: 'terapiaRealizada' },
-        { label: 'Orçamento', key: 'orcamento' }
+        {label: 'Descrição subjetiva', key: 'descricao_subjetiva'},
+        {label: 'Objetivo do paciente', key: 'objetivo_paciente'},
+        {label: 'Plano terapêutico', key: 'plano_terapeutico'},
+        {label: 'Anotações de enfermagem', key: 'anotacoes_medicas'},
+        {label: 'Terapia realizada', key: 'terapia_realizada'},
+        {label: 'Orçamento', key: 'orcamento'}
       ]
     }
   ];
+
 
   // mobile menu state
   menuOpen = false;
@@ -40,10 +44,9 @@ export class AppComponent {
     this.submenuOpen = false;
   }
 
-  // handle click on submenu items (placeholder handler)
+  // handle click on submenu items -> navigate to page with key
   onSubmenuSelect(key: string) {
-    // TODO: wire to actual routes or actions as needed
-    console.log('Selecionado:', key);
+    this.router.navigate(['/opcao', key]);
     this.closeMenu();
   }
 }

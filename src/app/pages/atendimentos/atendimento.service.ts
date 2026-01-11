@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Atendimento } from '../../models/atendimento';
+import { AttendanceFieldValuesByPatientResponseDto } from '../../models/attendance-field-values';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -82,5 +83,10 @@ export class AtendimentoService {
     return this.http.patch<Atendimento>(url, body).pipe(
       map((it: any) => this.parse(it))
     );
+  }
+
+  listFieldValuesByPatient(patientId: number, field: string): Observable<AttendanceFieldValuesByPatientResponseDto> {
+    const url = `${this.attendancesBase}/patients/${patientId}/attendances/fields/${field}`;
+    return this.http.get<AttendanceFieldValuesByPatientResponseDto>(url);
   }
 }

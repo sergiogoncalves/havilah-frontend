@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { OpcaoPageComponent } from './pages/opcao/opcao.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'pacientes', pathMatch: 'full' },
@@ -13,6 +14,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/atendimentos/atendimentos.module').then(m => m.AtendimentosModule)
   },
+  { path: 'opcao/:key', component: OpcaoPageComponent },
   { path: '**', redirectTo: 'pacientes' }
 ];
 
