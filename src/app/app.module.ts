@@ -9,6 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { QuillModule } from 'ngx-quill';
 import { HttpErrorInterceptor } from './core/http-error.interceptor';
+import { LoadingInterceptor } from './core/loading.interceptor';
+import { LoadingOverlayComponent } from './shared/loading-overlay.component';
 
 @NgModule({
   declarations: [
@@ -20,11 +22,13 @@ import { HttpErrorInterceptor } from './core/http-error.interceptor';
     AppRoutingModule,
     HttpClientModule,
     QuillModule.forRoot(),
-    ToastModule
+    ToastModule,
+    LoadingOverlayComponent
   ],
   providers: [
     MessageService,
-    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

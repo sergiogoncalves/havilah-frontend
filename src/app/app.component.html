@@ -350,6 +350,48 @@
     .mobile-menu.open { display: flex; }
     .mobile-menu a { color: white; padding: 8px; border-radius: 6px; text-decoration: none; }
   }
+
+  /* Dropdown styles for last item */
+  .menu-item-group {
+    position: relative;
+  }
+  .menu-item-group .dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #ffffff;
+    color: #333;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    min-width: 220px;
+    padding: 6px;
+    display: none;
+    z-index: 1000;
+  }
+  .menu-item-group:hover .dropdown {
+    display: block;
+  }
+  .dropdown a {
+    display: block;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  .dropdown a:hover {
+    background: rgba(0,0,0,0.05);
+  }
+
+  /* Mobile submenu */
+  .mobile-submenu {
+    padding-left: 8px;
+    margin-top: 4px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .mobile-submenu.open { display: flex; }
 </style>
 
 <!-- Toolbar -->
@@ -364,20 +406,34 @@
   <button class="mobile-menu-button" (click)="toggleMenu()" aria-label="Abrir menu">☰</button>
 
   <nav class="main-menu" role="navigation" aria-label="Main menu">
-    <!-- Static fallback (kept for non-Angular navigation) -->
-    <!-- Dynamic menu rendered from AppComponent.menuItems via ngFor -->
-    <ng-container *ngFor="let item of menuItems">
+    <ng-container *ngFor="let item of menuItems; let last = last">
       <a *ngIf="!item.external" [routerLink]="item.route" routerLinkActive="active" (click)="closeMenu()">{{ item.label }}</a>
-      <a *ngIf="item.external" href="#" (click)="$event.preventDefault(); closeMenu()">{{ item.label }}</a>
+      <ng-container *ngIf="item.external">
+        <a *ngIf="!last" href="#" (click)="$event.preventDefault(); closeMenu()">{{ item.label }}</a>
+        <!-- last item with dropdown -->
+        <div *ngIf="last" class="menu-item-group">
+          <a href="#" (click)="$event.preventDefault()">{{ item.label }}</a>
+          <div class="dropdown" role="menu" aria-label="Opções">
+            <a *ngFor="let opt of item.submenu" href="#" (click)="$event.preventDefault(); onSubmenuSelect(opt.key)">{{ opt.label }}</a>
+          </div>
+        </div>
+      </ng-container>
     </ng-container>
   </nav>
 
   <div class="spacer"></div>
   <!-- Mobile menu overlay -->
   <div class="mobile-menu" [class.open]="menuOpen">
-    <ng-container *ngFor="let item of menuItems">
+    <ng-container *ngFor="let item of menuItems; let last = last">
       <a *ngIf="!item.external" [routerLink]="item.route" (click)="closeMenu()">{{ item.label }}</a>
-      <a *ngIf="item.external" href="#" (click)="$event.preventDefault(); closeMenu()">{{ item.label }}</a>
+      <ng-container *ngIf="item.external">
+        <a *ngIf="!last" href="#" (click)="$event.preventDefault(); closeMenu()">{{ item.label }}</a>
+        <!-- collapsible submenu for last item -->
+        <a *ngIf="last" href="#" (click)="$event.preventDefault(); submenuOpen = !submenuOpen">{{ item.label }} ▾</a>
+        <div class="mobile-submenu" [class.open]="submenuOpen">
+          <a *ngFor="let opt of item.submenu" href="#" (click)="$event.preventDefault(); onSubmenuSelect(opt.key)">{{ opt.label }}</a>
+        </div>
+      </ng-container>
     </ng-container>
   </div>
 
@@ -389,6 +445,9 @@
   <router-outlet></router-outlet>
 
 </div>
+
+<!-- Global loading overlay -->
+<app-loading-overlay></app-loading-overlay>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * The content above * * * * * * * * * * * -->
