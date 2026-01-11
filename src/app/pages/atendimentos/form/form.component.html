@@ -90,6 +90,21 @@
           </p-calendar>
         </div>
 
+        <!-- Novo campo: Retornar contato (LocalDate) -->
+        <div class="form-field">
+          <label>Retornar contato</label>
+          <p-calendar
+            name="retornarContatoLocal"
+            [(ngModel)]="retornarContatoLocal"
+            [showTime]="false"
+            [touchUI]="true"
+            dateFormat="dd/mm/yy"
+            [style]="{ width: '100%' }"
+            [styleClass]="'w-full'">
+          </p-calendar>
+          <small class="hint">Selecione uma data para retorno de contato (sem horário).</small>
+        </div>
+
         <!-- Editor -->
         <div class="form-field form-editor">
           <label>Descrição Subjetiva - Relato do Paciente</label>

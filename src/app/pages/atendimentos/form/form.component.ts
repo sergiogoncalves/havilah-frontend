@@ -28,6 +28,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   pacientes: Paciente[] = [];
   pacientesLoaded = false;
   attendedAtLocal: Date | null = null;
+  retornarContatoLocal: Date | null = null; // novo campo LocalDate controlado pelo calendário de data
 
   private destroy$ = new Subject<void>();
 
@@ -111,11 +112,13 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       terapiaRealizada: null,
       orcamento: null,
       receita: null,
+      retornarContato: null,
       patient: null
     } as Atendimento;
 
     // Bind Date to calendar
     this.attendedAtLocal = this.isoToDate(this.atendimento?.attendedAt);
+    this.retornarContatoLocal = this.localDateToDate(this.atendimento?.retornarContato);
     this.error = null;
     this.cdr.markForCheck();
   }
@@ -159,6 +162,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.atendimento = at;
           this.attendedAtLocal = this.isoToDate(at.attendedAt);
+          this.retornarContatoLocal = this.localDateToDate(at.retornarContato ?? null);
           this.loading = false;
           this.cdr.markForCheck();
         },
@@ -181,6 +185,23 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   dateToIso(date?: Date | null): string | null {
     if (!date) return null;
     return date.toISOString();
+  }
+
+  // Helpers para LocalDate (yyyy-MM-dd)
+  localDateToDate(local?: string | null): Date | null {
+    if (!local) return null;
+    const [y, m, d] = local.split('-').map(n => Number(n));
+    if (!y || !m || !d) return null;
+    const dt = new Date(y, m - 1, d);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  dateToLocalDate(date?: Date | null): string | null {
+    if (!date) return null;
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const d = date.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   isPatientInvalid(): boolean {
@@ -218,6 +239,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       form.resetForm({
         patientId: this.atendimento?.patientId ?? 0,
         attendedAtLocal: this.attendedAtLocal,
+        retornarContatoLocal: this.retornarContatoLocal,
         descricaoSubjetiva: this.atendimento?.descricaoSubjetiva,
         objetivoPaciente: this.atendimento?.objetivoPaciente,
         planoTerapeutico: this.atendimento?.planoTerapeutico,
@@ -290,6 +312,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Convert selected Date to ISO
     const iso = this.dateToIso(this.attendedAtLocal);
+    const retornarContatoLocalDate = this.dateToLocalDate(this.retornarContatoLocal);
 
     const payload: Partial<Atendimento> = {
       id: this.atendimento.id,
@@ -301,7 +324,8 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       anotacoesMedicas: this.atendimento.anotacoesMedicas,
       terapiaRealizada: this.atendimento.terapiaRealizada,
       orcamento: this.atendimento.orcamento,
-      receita: this.atendimento.receita
+      receita: this.atendimento.receita,
+      retornarContato: retornarContatoLocalDate ?? this.atendimento.retornarContato ?? null
     };
 
     const obs = (this.isEditMode && this.atendimento.id !== 0)

@@ -11,5 +11,6 @@ export interface Atendimento {
   terapiaRealizada: string | null;
   orcamento: string | null;
   receita: string | null;
+  retornarContato?: string | null; // Novo campo LocalDate (yyyy-MM-dd) vindo do backend
   patient: Paciente | null;
 }

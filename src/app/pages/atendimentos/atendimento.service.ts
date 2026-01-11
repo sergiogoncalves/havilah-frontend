@@ -18,7 +18,8 @@ export class AtendimentoService {
   private parse(item: any): Atendimento {
     return {
       ...item,
-      attendedAt: item.attendedAt
+      attendedAt: item.attendedAt,
+      retornarContato: item.retornarContato ?? null
     };
   }
 
@@ -78,7 +79,8 @@ export class AtendimentoService {
       anotacoesMedicas: (payload as any).anotacoesMedicas,
       terapiaRealizada: (payload as any).terapiaRealizada,
       orcamento: (payload as any).orcamento,
-      receita: (payload as any).receita
+      receita: (payload as any).receita,
+      retornarContato: (payload as any).retornarContato
     };
 
     return this.http.patch<Atendimento>(url, body).pipe(
