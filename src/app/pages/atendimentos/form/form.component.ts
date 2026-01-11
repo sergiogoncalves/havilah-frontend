@@ -187,6 +187,12 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   newRecord(form?: NgForm) {
+    // Se estiver editando, confirma antes de criar novo
+    if (this.isEditMode) {
+      const confirmed = window.confirm('Deseja realmente fazer um novo atendimento? Você está editando um no momento.');
+      if (!confirmed) return;
+    }
+
     this.isEditMode = false;
     this.saving = false;
     this.error = null;
@@ -209,7 +215,22 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  back() {
+  back(form?: NgForm) {
+    // Confirmação dependendo do contexto
+    if (this.isEditMode) {
+      const confirmed = window.confirm('Deseja realmente voltar? Você está editando um atendimento no momento.');
+      if (!confirmed) return;
+      this.router.navigate(['/atendimentos']);
+      return;
+    }
+
+    // Se for novo registro e houver alterações, confirma
+    const isDirty = form ? form.dirty : true; // se não tiver form, por segurança, pergunta
+    if (isDirty) {
+      const confirmed = window.confirm('Você está digitando um novo atendimento. Deseja realmente voltar?');
+      if (!confirmed) return;
+    }
+
     this.router.navigate(['/atendimentos']);
   }
 

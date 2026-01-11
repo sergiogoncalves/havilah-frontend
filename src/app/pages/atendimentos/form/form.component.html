@@ -29,7 +29,7 @@
         label="Voltar"
         icon="pi pi-arrow-left"
         class="p-button-secondary"
-        (click)="back()">
+        (click)="back(atForm)">
       </button>
     </div>
 
@@ -146,6 +146,17 @@
           <quill-editor
             name="orcamento"
             [(ngModel)]="atendimento.orcamento"
+            [modules]="quillModules"
+            placeholder="Digite...">
+          </quill-editor>
+        </div>
+
+        <!-- Novo campo Receita -->
+        <div class="form-field form-editor">
+          <label>Receita</label>
+          <quill-editor
+            name="receita"
+            [(ngModel)]="atendimento.receita"
             [modules]="quillModules"
             placeholder="Digite...">
           </quill-editor>
