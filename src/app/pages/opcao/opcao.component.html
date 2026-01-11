@@ -42,6 +42,9 @@
             <div class="value">
               <div class="value-box" [innerHTML]="(it.value && it.value.trim().length) ? it.value : ('<p>Nesse dia não houve ' + label.toLowerCase() + '.</p>')"></div>
             </div>
+            <div class="actions" *ngIf="!isEmpty(it.value)">
+              <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-file-pdf" label="PDF"></button>
+            </div>
           </div>
         </li>
       </ul>

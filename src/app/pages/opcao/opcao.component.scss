@@ -13,9 +13,10 @@
 label { font-weight: 600; }
 .section-title { margin-top: 1rem; font-size: 1rem; }
 .items { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; gap: .5rem; }
-.item-row { display: grid; grid-template-columns: 180px 1fr; gap: .75rem; align-items: start; }
+.item-row { display: grid; grid-template-columns: 180px 1fr auto; gap: .75rem; align-items: start; }
 .date { color: #555; font-size: .9rem; }
 .value { white-space: pre-wrap; }
+.actions { display: flex; align-items: flex-start; justify-content: flex-end; }
 .mt-2 { margin-top: .5rem; }
 .mt-3 { margin-top: 1rem; }
 .value-box {
