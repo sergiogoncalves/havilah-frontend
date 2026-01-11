@@ -47,7 +47,8 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
     plano_terapeutico: 'Plano terapêutico',
     anotacoes_medicas: 'Anotações médicas',
     terapia_realizada: 'Terapia realizada',
-    orcamento: 'Orçamento'
+    orcamento: 'Orçamento',
+    receita: 'Receita'
   };
 
   private toBackendKey(k: string): string {
@@ -58,7 +59,9 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
       planoTerapeutico: 'plano_terapeutico',
       anotacoesMedicas: 'anotacoes_medicas',
       terapiaRealizada: 'terapia_realizada',
-      orcamento: 'orcamento'
+      orcamento: 'orcamento',
+      receita: 'receita',
+      privateNotesHtml: 'receita'
     };
     if (!k) return '';
     if (map[k]) return map[k];

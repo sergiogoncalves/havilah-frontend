@@ -108,11 +108,12 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       anotacoesMedicas: null,
       terapiaRealizada: null,
       orcamento: null,
+      receita: null,
       patient: null
-    };
+    } as Atendimento;
 
     // Bind Date to calendar
-    this.attendedAtLocal = this.isoToDate(this.atendimento.attendedAt);
+    this.attendedAtLocal = this.isoToDate(this.atendimento?.attendedAt);
     this.error = null;
     this.cdr.markForCheck();
   }
@@ -202,7 +203,8 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
         planoTerapeutico: this.atendimento?.planoTerapeutico,
         anotacoesMedicas: this.atendimento?.anotacoesMedicas,
         terapiaRealizada: this.atendimento?.terapiaRealizada,
-        orcamento: this.atendimento?.orcamento
+        orcamento: this.atendimento?.orcamento,
+        receita: this.atendimento?.receita ?? null
       });
     }
   }
@@ -249,7 +251,8 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       planoTerapeutico: this.atendimento.planoTerapeutico,
       anotacoesMedicas: this.atendimento.anotacoesMedicas,
       terapiaRealizada: this.atendimento.terapiaRealizada,
-      orcamento: this.atendimento.orcamento
+      orcamento: this.atendimento.orcamento,
+      receita: this.atendimento.receita
     };
 
     const obs = (this.isEditMode && this.atendimento.id !== 0)

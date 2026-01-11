@@ -10,5 +10,6 @@ export interface Atendimento {
   anotacoesMedicas: string | null;
   terapiaRealizada: string | null;
   orcamento: string | null;
+  receita: string | null;
   patient: Paciente | null;
 }

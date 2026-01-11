@@ -77,7 +77,8 @@ export class AtendimentoService {
       planoTerapeutico: (payload as any).planoTerapeutico,
       anotacoesMedicas: (payload as any).anotacoesMedicas,
       terapiaRealizada: (payload as any).terapiaRealizada,
-      orcamento: (payload as any).orcamento
+      orcamento: (payload as any).orcamento,
+      receita: (payload as any).receita
     };
 
     return this.http.patch<Atendimento>(url, body).pipe(
