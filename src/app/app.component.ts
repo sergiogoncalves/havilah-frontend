@@ -24,7 +24,8 @@ export class AppComponent {
         {label: 'Plano terapêutico', key: 'plano_terapeutico'},
         {label: 'Anotações de enfermagem', key: 'anotacoes_medicas'},
         {label: 'Terapia realizada', key: 'terapia_realizada'},
-        {label: 'Orçamento', key: 'orcamento'}
+        {label: 'Orçamento', key: 'orcamento'},
+        {label: 'Receita', key: 'receita'} // New submenu option added here
       ]
     }
   ];
