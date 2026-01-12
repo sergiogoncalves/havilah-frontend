@@ -40,7 +40,11 @@
           <div class="item-row">
             <div class="date"><strong>{{ it.attendedAt | date:'dd/MM/yyyy HH:mm' }}</strong></div>
             <div class="value">
-              <div class="value-box" [innerHTML]="(it.value && it.value.trim().length) ? it.value : ('<p>Nesse dia não houve ' + label.toLowerCase() + '.</p>')"></div>
+              <div class="value-box">
+                <div class="ql-container ql-snow">
+                  <div class="ql-editor" [innerHTML]="(it.value && it.value.trim().length) ? it.value : ('<p>Nesse dia não houve ' + label.toLowerCase() + '.</p>')"></div>
+                </div>
+              </div>
             </div>
             <div class="actions" *ngIf="!isEmpty(it.value)">
               <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-file-pdf" [attr.aria-label]="'PDF'" (click)="abrirModalComHtml(it.value!, label)"></button>
@@ -68,6 +72,8 @@
   </ng-template>
 
   <div style="padding:1rem; overflow:auto; max-height:70vh; background:#fff;">
-    <div #modalDocContainer [innerHTML]="modalHtml" style="background:#fff;"></div>
+    <div #modalDocContainer class="ql-container ql-snow" style="background:#fff;">
+      <div class="ql-editor" [innerHTML]="modalHtml"></div>
+    </div>
   </div>
 </p-dialog>

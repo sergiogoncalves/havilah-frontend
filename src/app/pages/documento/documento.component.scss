@@ -11,5 +11,58 @@
   padding: 1rem;
 }
 
-:host ::ng-deep .p-button { display: inline-flex; align-items: center; gap: .5rem; }
+// Remove default spacing from paragraphs inside the document content
+.doc-container p {
+  margin: 0 !important; // enforce no extra top/bottom space even if inline styles exist
+}
 
+// Quill-like content styles to match editor rendering
+.doc-container .ql-editor {
+  box-sizing: border-box;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #111827; // near black
+}
+
+.doc-container .ql-editor h1 { font-size: 2em; margin: 0 0 .5em; }
+.doc-container .ql-editor h2 { font-size: 1.5em; margin: 0 0 .5em; }
+.doc-container .ql-editor h3 { font-size: 1.17em; margin: 0 0 .5em; }
+.doc-container .ql-editor h4 { font-size: 1em; margin: 0 0 .5em; }
+.doc-container .ql-editor h5 { font-size: .83em; margin: 0 0 .5em; }
+.doc-container .ql-editor h6 { font-size: .67em; margin: 0 0 .5em; }
+
+.doc-container .ql-editor p { margin: 0 0 8px 0 !important; }
+.doc-container .ql-editor ul, .doc-container .ql-editor ol { margin: 0 0 8px 1.25em; }
+.doc-container .ql-editor li { margin: .25em 0; }
+
+.doc-container .ql-editor blockquote {
+  border-left: 4px solid #e5e7eb;
+  margin: 0 0 .75em;
+  padding: .5em 1em;
+  color: #6b7280;
+}
+
+.doc-container .ql-editor pre {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: .75em 1em;
+  overflow: auto;
+  margin: 0 0 .75em;
+}
+
+.doc-container .ql-editor code { font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; }
+
+.doc-container .ql-editor table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 .75em;
+}
+.doc-container .ql-editor th, .doc-container .ql-editor td {
+  border: 1px solid #e5e7eb;
+  padding: .5em .75em;
+}
+
+.doc-container .ql-editor img { max-width: 100%; height: auto; }
+
+:host ::ng-deep .p-button { display: inline-flex; align-items: center; gap: .5rem; }

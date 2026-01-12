@@ -13,11 +13,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { DialogModule } from 'primeng/dialog';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-opcao-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonModule, DropdownModule, FormsModule, DialogModule],
+  imports: [CommonModule, RouterModule, ButtonModule, DropdownModule, FormsModule, DialogModule, QuillModule],
   templateUrl: './opcao.component.html',
   styleUrls: ['./opcao.component.scss']
 })

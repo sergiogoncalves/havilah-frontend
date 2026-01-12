@@ -55,10 +55,56 @@ export class DocumentoComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Normalize HTML to remove excess spacing from <p> tags and ensure consistent Quill-like wrapper
+  private normalizeHtml(html: string): string {
+    let normalized = html;
+
+    // Ensure images scale within the container
+    normalized = normalized.replace(/<img([^>]*)>/gi, (match: string, attrs: string) => {
+      if (/style\s*=\s*"/i.test(attrs)) {
+        // Append max-width and height auto if style exists
+        return `<img${attrs.replace(/style\s*=\s*"([^"]*)"/i, (m: string, styleVal: string) => {
+          const cleaned = styleVal.trim();
+          const ensureMax = cleaned.includes('max-width') ? cleaned : `${cleaned}${cleaned ? '; ' : ''}max-width: 100%`;
+          const ensureHeight = ensureMax.includes('height') ? ensureMax : `${ensureMax}; height: auto`;
+          return `style="${ensureHeight}"`;
+        })}>`;
+      }
+      return `<img${attrs} style="max-width: 100%; height: auto">`;
+    });
+
+    // Remove margin-related declarations from inline styles in <p> tags and enforce margin-bottom
+    normalized = normalized.replace(/<p([^>]*)>/gi, (match: string, attrs: string) => {
+      let newAttrs = attrs || '';
+      newAttrs = newAttrs.replace(/style\s*=\s*"([^"]*)"/i, (m: string, styleVal: string) => {
+        const cleaned = styleVal
+          .replace(/margin\s*:[^;]*;?/gi, '')
+          .replace(/margin-top\s*:[^;]*;?/gi, '')
+          .replace(/margin-bottom\s*:[^;]*;?/gi, '')
+          .trim();
+        const withMargin = (cleaned ? cleaned + '; ' : '') + 'margin: 0 0 8px 0';
+        return `style="${withMargin}"`;
+      });
+      if (!/style\s*=\s*"/i.test(newAttrs)) {
+        newAttrs = `${newAttrs} style="margin: 0 0 8px 0"`;
+      }
+      return `<p${newAttrs}>`;
+    });
+
+    // Wrap content with a quill-like editor container to apply consistent CSS during PDF rendering
+    const hasQuillWrapper = /class\s*=\s*"[^"]*ql-editor[^"]*"/.test(normalized) || /<div[^>]*class=[^>]*ql-editor/i.test(normalized);
+    if (!hasQuillWrapper) {
+      normalized = `<div class="ql-editor">${normalized}</div>`;
+    }
+
+    return normalized;
+  }
+
   setHtml(html: string) {
     this.rawHtml = html;
+    const normalized = this.normalizeHtml(html);
     // Sanitize with bypassSecurityTrustHtml only for trusted source
-    this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+    this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(normalized);
   }
 
   async generatePdf() {
@@ -104,4 +150,3 @@ export class DocumentoComponent implements OnInit, OnDestroy {
     pdf.save(filename);
   }
 }
-
