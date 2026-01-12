@@ -127,7 +127,10 @@
         </div>
 
         <div class="form-field form-editor">
-          <label>Plano Terapêutico</label>
+          <div class="field-header">
+            <label>Plano Terapêutico</label>
+            <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('planoTerapeutico', 'Plano terapêutico')"></button>
+          </div>
           <quill-editor
             name="planoTerapeutico"
             [(ngModel)]="atendimento.planoTerapeutico"
@@ -137,27 +140,10 @@
         </div>
 
         <div class="form-field form-editor">
-          <label>Anotações de enfermagem</label>
-          <quill-editor
-            name="anotacoesMedicas"
-            [(ngModel)]="atendimento.anotacoesMedicas"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
-
-        <div class="form-field form-editor">
-          <label>Terapia Realizada</label>
-          <quill-editor
-            name="terapiaRealizada"
-            [(ngModel)]="atendimento.terapiaRealizada"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
-
-        <div class="form-field form-editor">
-          <label>Orçamento</label>
+          <div class="field-header">
+            <label>Orçamento</label>
+            <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('orcamento', 'Orçamento')"></button>
+          </div>
           <quill-editor
             name="orcamento"
             [(ngModel)]="atendimento.orcamento"
@@ -168,7 +154,10 @@
 
         <!-- Novo campo Receita -->
         <div class="form-field form-editor">
-          <label>Receita</label>
+          <div class="field-header">
+            <label>Receita</label>
+            <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('receita', 'Receita')"></button>
+          </div>
           <quill-editor
             name="receita"
             [(ngModel)]="atendimento.receita"
@@ -183,4 +172,21 @@
 
   <!-- Dialogo de confirmação global para esta página -->
   <p-confirmDialog></p-confirmDialog>
+
+  <!-- Dialogo para exibição de conteúdo e geração de PDF -->
+  <p-dialog [(visible)]="showDialog" [modal]="true" [dismissableMask]="true" [style]="{ width: '800px', maxWidth: '96vw' }" [contentStyle]="{ padding: '0' }">
+    <ng-template pTemplate="header">
+      <div style="display:flex; align-items:center; width:100%; gap:.75rem;">
+        <h3 style="margin:0; font-size:1.1rem;">{{ modalTitle }}</h3>
+        <span style="flex:1"></span>
+        <button pButton type="button" icon="pi pi-file-pdf" (click)="gerarPdfDoModal()"></button>
+      </div>
+    </ng-template>
+
+    <div style="padding:1rem; overflow:auto; max-height:70vh; background:#fff;">
+      <div #modalDocContainer class="ql-container ql-snow" style="background:#fff;">
+        <div class="ql-editor" [innerHTML]="modalHtml"></div>
+      </div>
+    </div>
+  </p-dialog>
 </div>

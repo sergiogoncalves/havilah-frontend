@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -11,6 +11,9 @@ import { PrimeNGConfig } from 'primeng/api';
 import { AlertService } from '../../../alert.service';
 import { primengPtBr } from '../../../core/locale/primeng-ptbr';
 import { ConfirmationService } from 'primeng/api';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-atendimento-form',
@@ -47,6 +50,12 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     ]
   };
 
+  // Modal state for PDF preview
+  showDialog = false;
+  modalTitle: string = 'Documento';
+  modalHtml: SafeHtml | null = null;
+  @ViewChild('modalDocContainer') modalDocContainer?: ElementRef<HTMLDivElement>;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -55,7 +64,8 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private primengConfig: PrimeNGConfig,
     private alerts: AlertService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -344,5 +354,59 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.alerts.error('Falha ao salvar atendimento');
       }
     });
+  }
+
+  // Helper to open the Documento viewer in a modal for a given field
+  abrirDocumentoComCampo(campo: 'planoTerapeutico' | 'orcamento' | 'receita', titulo?: string) {
+    if (!this.atendimento) return;
+    const title = titulo || {
+      planoTerapeutico: 'Plano terapêutico',
+      orcamento: 'Orçamento',
+      receita: 'Receita'
+    }[campo];
+
+    const html = (this.atendimento as any)[campo] as string | null | undefined;
+    const safeHtmlStr = html && html.trim().length ? html : `<p>Sem conteúdo em ${title?.toLowerCase()}.</p>`;
+
+    // Use sanitizer to trust backend/editor-provided HTML
+    this.modalTitle = title || 'Documento';
+    this.modalHtml = this.sanitizer.bypassSecurityTrustHtml(safeHtmlStr);
+    this.showDialog = true;
+  }
+
+  async gerarPdfDoModal(): Promise<void> {
+    const element = this.modalDocContainer?.nativeElement;
+    if (!element) return;
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
+    });
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    if (imgHeight <= pageHeight) {
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    } else {
+      let heightLeft = imgHeight;
+      let y = 0;
+      while (heightLeft > 0) {
+        pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        if (heightLeft > 0) {
+          pdf.addPage();
+          y = -(imgHeight - heightLeft);
+        }
+      }
+    }
+
+    pdf.save((this.modalTitle || 'documento') + '.pdf');
   }
 }

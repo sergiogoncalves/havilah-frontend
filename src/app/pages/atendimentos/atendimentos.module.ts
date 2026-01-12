@@ -15,6 +15,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { DialogModule } from 'primeng/dialog';
 
 
 
@@ -32,7 +33,8 @@ import { ConfirmationService } from 'primeng/api';
     QuillModule,
     DropdownModule,
     CalendarModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    DialogModule
   ],
   providers: [ConfirmationService]
 })
