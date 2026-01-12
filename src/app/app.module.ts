@@ -11,10 +11,13 @@ import { QuillModule } from 'ngx-quill';
 import { HttpErrorInterceptor } from './core/http-error.interceptor';
 import { LoadingInterceptor } from './core/loading.interceptor';
 import { LoadingOverlayComponent } from './shared/loading-overlay.component';
+import { DocumentoComponent } from './pages/documento/documento.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DocumentoComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +26,8 @@ import { LoadingOverlayComponent } from './shared/loading-overlay.component';
     HttpClientModule,
     QuillModule.forRoot(),
     ToastModule,
-    LoadingOverlayComponent
+    LoadingOverlayComponent,
+    CommonModule
   ],
   providers: [
     MessageService,

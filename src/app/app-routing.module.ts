@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OpcaoPageComponent } from './pages/opcao/opcao.component';
+import { DocumentoComponent } from './pages/documento/documento.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'pacientes', pathMatch: 'full' },
@@ -15,6 +16,7 @@ const routes: Routes = [
       import('./pages/atendimentos/atendimentos.module').then(m => m.AtendimentosModule)
   },
   { path: 'opcao/:key', component: OpcaoPageComponent },
+  { path: 'documento', component: DocumentoComponent },
   { path: '**', redirectTo: 'pacientes' }
 ];
 

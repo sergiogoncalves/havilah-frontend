@@ -1,0 +1,14 @@
+<div class="page">
+  <div class="header">
+    <h2>{{ title }}</h2>
+    <span class="spacer"></span>
+    <button class="p-button p-component" (click)="generatePdf()">
+      <span class="p-button-icon pi pi-file-pdf"></span>
+      <span class="p-button-label">Gerar PDF</span>
+    </button>
+  </div>
+
+  <div class="content">
+    <div #docContainer class="doc-container" [innerHTML]="safeHtml"></div>
+  </div>
+</div>

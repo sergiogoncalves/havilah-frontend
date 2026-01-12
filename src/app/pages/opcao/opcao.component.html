@@ -43,7 +43,9 @@
               <div class="value-box" [innerHTML]="(it.value && it.value.trim().length) ? it.value : ('<p>Nesse dia não houve ' + label.toLowerCase() + '.</p>')"></div>
             </div>
             <div class="actions" *ngIf="!isEmpty(it.value)">
-              <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-file-pdf" label="PDF"></button>
+              <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-file-pdf" label="PDF" (click)="abrirModalComHtml(it.value!, label)"></button>
+              <div style="height:.5rem"></div>
+              <a pButton type="button" class="p-button-rounded p-button-secondary" icon="pi pi-external-link" [attr.aria-label]="'Abrir atendimento'" [routerLink]="['/atendimentos', it.attendanceId]"></a>
             </div>
           </div>
         </li>
@@ -56,3 +58,16 @@
   </div>
 </div>
 
+<p-dialog [(visible)]="showDialog" [modal]="true" [dismissableMask]="true" [style]="{ width: '800px', maxWidth: '96vw' }" [contentStyle]="{ padding: '0' }" [breakpoints]="{ '960px': '95vw', '640px': '98vw' }">
+  <ng-template pTemplate="header">
+    <div style="display:flex; align-items:center; width:100%; gap:.75rem;">
+      <h3 style="margin:0; font-size:1.1rem;">{{ modalTitle }}</h3>
+      <span style="flex:1"></span>
+      <button pButton type="button" icon="pi pi-file-pdf" label="Gerar PDF" (click)="gerarPdfDoModal()"></button>
+    </div>
+  </ng-template>
+
+  <div style="padding:1rem; overflow:auto; max-height:70vh; background:#fff;">
+    <div #modalDocContainer [innerHTML]="modalHtml" style="background:#fff;"></div>
+  </div>
+</p-dialog>

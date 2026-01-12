@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -10,11 +10,14 @@ import { Subscription } from 'rxjs';
 import { AtendimentoService } from '../atendimentos/atendimento.service';
 import { AttendanceFieldValuesByPatientResponseDto } from '../../models/attendance-field-values';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DialogModule } from 'primeng/dialog';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-opcao-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonModule, DropdownModule, FormsModule],
+  imports: [CommonModule, RouterModule, ButtonModule, DropdownModule, FormsModule, DialogModule],
   templateUrl: './opcao.component.html',
   styleUrls: ['./opcao.component.scss']
 })
@@ -40,6 +43,12 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
   values?: AttendanceFieldValuesByPatientResponseDto | null = null;
   valuesLoading = false;
   valuesError: string | null = null;
+
+  // Modal state
+  showDialog = false;
+  modalTitle = 'Documento';
+  modalHtml: SafeHtml | null = null;
+  @ViewChild('modalDocContainer') modalDocContainer?: ElementRef<HTMLDivElement>;
 
   private labels: Record<string, string> = {
     descricao_subjetiva: 'Descrição subjetiva',
@@ -123,19 +132,51 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  toHtml(value: string | null | undefined): SafeHtml {
-    const v = (value ?? '').trim();
-    if (!v) {
-      // return simple text wrapped in a paragraph to keep layout consistent
-      return this.sanitizer.bypassSecurityTrustHtml(`<p>Nesse dia não houve ${this.label.toLowerCase()}.</p>`);
-    }
-    // Trust backend-provided HTML. If you prefer strict sanitization, replace with:
-    // return this.sanitizer.sanitize(SecurityContext.HTML, v) ?? '';
-    return this.sanitizer.bypassSecurityTrustHtml(v);
-  }
-
   isEmpty(value: string | null | undefined): boolean {
     return !(value && value.trim().length);
+  }
+
+  abrirModalComHtml(html: string, title?: string): void {
+    this.modalTitle = title || this.label || 'Documento';
+    // Trust backend-provided HTML
+    this.modalHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+    this.showDialog = true;
+  }
+
+  async gerarPdfDoModal(): Promise<void> {
+    const element = this.modalDocContainer?.nativeElement;
+    if (!element) return;
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
+    });
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    if (imgHeight <= pageHeight) {
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    } else {
+      let heightLeft = imgHeight;
+      let y = 0;
+      while (heightLeft > 0) {
+        pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        if (heightLeft > 0) {
+          pdf.addPage();
+          y = -(imgHeight - heightLeft);
+        }
+      }
+    }
+
+    pdf.save((this.modalTitle || 'documento') + '.pdf');
   }
 
   ngOnDestroy(): void {
