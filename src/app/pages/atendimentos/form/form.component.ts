@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -78,6 +79,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private service: AtendimentoService,
     private pacienteService: PacienteService,
     private cdr: ChangeDetectorRef,
@@ -491,6 +493,13 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
           if (!isNaN(newId) && newId > 0) {
             this.isEditMode = true;
             this.atendimento = { ...(this.atendimento as Atendimento), ...(saved as Atendimento) };
+
+            // Se estávamos em /atendimentos/novo, só atualiza a URL (sem navegar/recriar componente),
+            // para não interromper a abertura do PDF.
+            const currentUrl = this.router.url;
+            if (currentUrl.includes('/atendimentos/novo')) {
+              this.location.replaceState(`/atendimentos/${newId}`);
+            }
 
             if (form) {
               form.form.markAsPristine();
