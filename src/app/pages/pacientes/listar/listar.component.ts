@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Paciente } from '../../../models/paciente';
 import { PacienteService } from '../paciente.service';
 import { Router } from '@angular/router';
-import { AlertService } from '../../../alert.service';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-listar',
@@ -14,7 +14,10 @@ export class ListarComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private pacienteService: PacienteService, private router: Router, private alerts: AlertService) { }
+  globalFilter = '';
+  @ViewChild('dt') dt?: Table;
+
+  constructor(private pacienteService: PacienteService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadPacientes();
@@ -27,6 +30,10 @@ export class ListarComponent implements OnInit {
       next: (data) => {
         this.pacientes = data;
         this.loading = false;
+        // reaplica filtro após reload
+        if (this.globalFilter?.trim()) {
+          this.dt?.filterGlobal(this.globalFilter, 'contains');
+        }
       },
       error: (err) => {
         console.error('Failed to load pacientes', err);
@@ -34,6 +41,12 @@ export class ListarComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onGlobalFilter(event: Event) {
+    const value = (event.target as HTMLInputElement)?.value ?? '';
+    this.globalFilter = value;
+    this.dt?.filterGlobal(value, 'contains');
   }
 
   navigateToNovo() {
