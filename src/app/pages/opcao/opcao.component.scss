@@ -1,36 +1,172 @@
-.page { padding: 1rem; }
-.header { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
-.header h2 { margin: 0; font-size: 1.25rem; }
-.pill { background: #e8f0fe; color: #174ea6; padding: .25rem .5rem; border-radius: 999px; font-weight: 600; font-size: .9rem; }
-.spacer { flex: 1; }
-.content {
-  background: #fff;
-  padding: 1rem;
-  border-radius: .5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.1);
-}
-.controls { display: grid; gap: .5rem; align-items: center; max-width: 420px; }
-label { font-weight: 600; }
-.section-title { margin-top: 1rem; font-size: 1rem; }
-.items { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; gap: .5rem; }
-.item-row { display: grid; grid-template-columns: 180px 1fr auto; gap: .75rem; align-items: start; }
-.date { color: #555; font-size: .9rem; }
-.value { white-space: pre-wrap; }
-.actions { display: flex; align-items: flex-start; justify-content: flex-end; }
-.mt-2 { margin-top: .5rem; }
-.mt-3 { margin-top: 1rem; }
-.value-box {
-  background: #ffffff;
-  border: 1px solid #e5e7eb; /* light gray border */
-  border-radius: 6px;
-  padding: .75rem;
-  line-height: 1.5;
+/* Estilo alinhado com `atendimentos/form` */
+.opcao-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-.value-box p { margin: 0 0 .5rem; }
-.value-box ul { margin: .5rem 0; padding-left: 1.25rem; }
-.value-box ol { margin: .5rem 0; padding-left: 1.25rem; }
-.value-box h1, .value-box h2, .value-box h3 { margin: .5rem 0; }
+.opcao-container {
+  width: 80%;
+  max-width: 1200px;
+  padding: 1rem 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-header .title h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.page-header .title p {
+  margin: 0.25rem 0 0;
+  opacity: 0.8;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.patient-card {
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-title .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(59, 130, 246, 0.12);
+  color: rgba(37, 99, 235, 1);
+}
+
+.card-title h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.card-title p {
+  margin: 0.2rem 0 0;
+  opacity: 0.75;
+}
+
+.controls {
+  max-width: 520px;
+}
+
+.state-message {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: #f5f7fb;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.state-error {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: rgba(185, 28, 28, 1);
+}
+
+.values-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* PrimeNG Dropdown */
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+.pill {
+  background: rgba(59, 130, 246, 0.12);
+  color: #0b3a74;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: grid;
+  gap: 0.75rem;
+}
+
+.item-card {
+  padding: 1rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.item-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.date {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.value-box {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.value-box p { margin: 0 0 0.5rem; }
+.value-box ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+.value-box ol { margin: 0.5rem 0; padding-left: 1.25rem; }
+.value-box h1, .value-box h2, .value-box h3 { margin: 0.5rem 0; }
 
 /* Keep consistent hover behavior if tables are used inside */
 :host ::ng-deep .p-datatable .p-datatable-tbody > tr {
@@ -39,4 +175,34 @@ label { font-weight: 600; }
 
 :host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
   background-color: var(--surface-hover, #f4f4f5);
+}
+
+@media (max-width: 900px) {
+  .opcao-container {
+    width: calc(100% - 2rem);
+  }
+
+  .page-header {
+    grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  :host ::ng-deep .header-actions .p-button {
+    width: 100%;
+  }
+
+  .controls {
+    max-width: 100%;
+  }
+
+  .item-header {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
 }

@@ -55,7 +55,7 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
     descricao_subjetiva: 'Descrição subjetiva',
     objetivo_paciente: 'Objetivo do paciente',
     plano_terapeutico: 'Plano terapêutico',
-    anotacoes_medicas: 'Anotações médicas',
+    anotacoes_medicas: 'Anotações de enfermagem',
     terapia_realizada: 'Terapia realizada',
     orcamento: 'Orçamento',
     receita: 'Receita'

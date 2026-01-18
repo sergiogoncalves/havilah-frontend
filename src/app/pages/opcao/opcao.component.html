@@ -1,64 +1,106 @@
-<div class="page">
-  <div class="header">
-    <h2>Opção</h2>
-    <div class="pill">{{ label }}</div>
-    <span class="spacer"></span>
-    <a pButton label="Ver todos os pacientes" icon="pi pi-users" [routerLink]="['/pacientes']"></a>
-  </div>
+<div class="opcao-page">
+  <div class="opcao-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="title">
+        <h1>{{ label }}</h1>
+        <p>Selecione um paciente para consultar os registros deste campo</p>
+      </div>
 
-  <div class="content">
-    <div *ngIf="loading">Carregando pacientes...</div>
-    <div *ngIf="error" class="p-text-danger">{{ error }}</div>
-
-    <div *ngIf="!loading && !error" class="controls">
-      <label for="paciente">Paciente</label>
-      <p-dropdown
-        inputId="paciente"
-        [options]="pacientes"
-        [(ngModel)]="selectedPacienteId"
-        optionLabel="fullName"
-        optionValue="id"
-        placeholder="-- Selecione --"
-        [filter]="true"
-        filterBy="fullName"
-        [showClear]="true"
-        [style]="{ width: '100%' }"
-        (ngModelChange)="onPacienteChange()">
-        <ng-template pTemplate="item" let-option>
-          <div>{{ option.fullName }}</div>
-        </ng-template>
-      </p-dropdown>
+      <div class="header-actions">
+        <div class="pill" aria-label="Tipo de opção">{{ label }}</div>
+        <a pButton label="Ver pacientes" icon="pi pi-users" class="p-button-outlined" [routerLink]="['/pacientes']"></a>
+      </div>
     </div>
 
-    <div *ngIf="valuesLoading" class="mt-3">Carregando valores...</div>
-    <div *ngIf="valuesError" class="p-text-danger mt-2">{{ valuesError }}</div>
+    <!-- Seleção de paciente -->
+    <section class="patient-card">
+      <div class="card-title">
+        <div class="icon"><i class="pi pi-user"></i></div>
+        <div>
+          <h2>Paciente</h2>
+          <p>Escolha um paciente para carregar os valores</p>
+        </div>
+      </div>
 
-    <div *ngIf="values && values.items && values.items.length" class="mt-3">
-      <h3 class="section-title">Valores de {{ label }} para o paciente selecionado</h3>
-      <ul class="items">
-        <li *ngFor="let it of values.items">
-          <div class="item-row">
-            <div class="date"><strong>{{ it.attendedAt | date:'dd/MM/yyyy HH:mm' }}</strong></div>
-            <div class="value">
-              <div class="value-box">
-                <div class="ql-container ql-snow">
-                  <div class="ql-editor" [innerHTML]="(it.value && it.value.trim().length) ? it.value : ('<p>Nesse dia não houve ' + label.toLowerCase() + '.</p>')"></div>
+      <div *ngIf="loading" class="state-message">
+        Carregando pacientes...
+      </div>
+      <div *ngIf="error" class="state-message state-error">{{ error }}</div>
+
+      <div *ngIf="!loading && !error" class="controls">
+        <p-dropdown
+          inputId="paciente"
+          [options]="pacientes"
+          [(ngModel)]="selectedPacienteId"
+          optionLabel="fullName"
+          optionValue="id"
+          placeholder="-- Selecione --"
+          [filter]="true"
+          filterBy="fullName"
+          [showClear]="true"
+          [style]="{ width: '100%' }"
+          [styleClass]="'w-full'"
+          (ngModelChange)="onPacienteChange()">
+          <ng-template pTemplate="item" let-option>
+            <div>{{ option.fullName }}</div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </section>
+
+    <!-- Valores -->
+    <section class="values-section" *ngIf="selectedPacienteId">
+      <div *ngIf="valuesLoading" class="state-message">Carregando valores...</div>
+      <div *ngIf="valuesError" class="state-message state-error">{{ valuesError }}</div>
+
+      <div *ngIf="values && values.items && values.items.length" class="values-list">
+        <h2 class="section-title">Valores de {{ label }} para o paciente selecionado</h2>
+
+        <ul class="items">
+          <li *ngFor="let it of values.items" class="item-card">
+            <div class="item-header">
+              <div class="date">
+                <strong>{{ it.attendedAt | date:'dd/MM/yyyy HH:mm' }}</strong>
+              </div>
+
+              <div class="actions" *ngIf="!isEmpty(it.value)">
+                <button
+                  pButton
+                  type="button"
+                  class="p-button-rounded p-button-outlined"
+                  icon="pi pi-file-pdf"
+                  [attr.aria-label]="'PDF'"
+                  (click)="abrirModalComHtml(it.value!, label)">
+                </button>
+
+                <a
+                  pButton
+                  type="button"
+                  class="p-button-rounded p-button-secondary"
+                  icon="pi pi-external-link"
+                  [attr.aria-label]="'Abrir atendimento'"
+                  [routerLink]="['/atendimentos', it.attendanceId]">
+                </a>
+              </div>
+            </div>
+
+            <div class="value-box">
+              <div class="ql-container ql-snow">
+                <div
+                  class="ql-editor"
+                  [innerHTML]="(it.value && it.value.trim().length) ? it.value : ('<p>Nesse dia n\u00e3o houve ' + label.toLowerCase() + '.</p>')">
                 </div>
               </div>
             </div>
-            <div class="actions" *ngIf="!isEmpty(it.value)">
-              <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-file-pdf" [attr.aria-label]="'PDF'" (click)="abrirModalComHtml(it.value!, label)"></button>
-              <div style="height:.5rem"></div>
-              <a pButton type="button" class="p-button-rounded p-button-secondary" icon="pi pi-external-link" [attr.aria-label]="'Abrir atendimento'" [routerLink]="['/atendimentos', it.attendanceId]"></a>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
+          </li>
+        </ul>
+      </div>
 
-    <div *ngIf="values && (!values.items || !values.items.length) && selectedPacienteId" class="mt-3">
-      <em>Nenhum valor encontrado para este campo.</em>
-    </div>
+      <div *ngIf="values && (!values.items || !values.items.length)" class="state-message">
+        <em>Nenhum valor encontrado para este campo.</em>
+      </div>
+    </section>
   </div>
 </div>
 

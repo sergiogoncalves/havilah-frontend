@@ -61,6 +61,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   steps: MenuItem[] = [
     { label: 'Subjetivo' },
     { label: 'Objetivo' },
+    { label: 'Anotações de enfermagem' },
     { label: 'Plano' },
     { label: 'Orçamento' },
     { label: 'Receita' }
@@ -136,6 +137,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       objetivoPaciente: null,
       planoTerapeutico: null,
       anotacoesMedicas: null,
+      // anotacoesEnfermagem removido: backend/model usam anotacoesMedicas
       terapiaRealizada: null,
       orcamento: null,
       receita: null,

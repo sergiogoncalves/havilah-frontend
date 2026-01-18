@@ -1,4 +1,7 @@
-/* Layout inspirado no atendimentos */
+/* Se existe um header fixo no app, defina globalmente:
+   :root { --app-header-height: 64px; }
+*/
+
 .pacientes-page {
   width: 100%;
   display: flex;
@@ -14,17 +17,15 @@
   padding: 1rem 0;
 }
 
-.actions-bar {
-  position: sticky;
-  top: var(--app-header-height, 0px);
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+.page-header .title h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.page-header .title p {
+  margin: 0.25rem 0 0;
+  opacity: 0.8;
 }
 
 .form-scroll {
@@ -34,6 +35,46 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.card {
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-title .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(59, 130, 246, 0.12);
+  color: rgba(37, 99, 235, 1);
+}
+
+.card-title h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.card-title p {
+  margin: 0.2rem 0 0;
+  opacity: 0.75;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
 }
 
 .form-field {
@@ -48,7 +89,9 @@
 }
 
 /* Espaçamento entre os contatos */
-.contact-row { margin-bottom: 1rem; }
+.contact-row {
+  margin-bottom: 1rem;
+}
 
 /* Contacts row as CSS grid: tipo (3), valor (6), principal (2), excluir (1) */
 .contact-row-flex {
@@ -58,38 +101,47 @@
   align-items: center;
 }
 
-/* Full width inner controls */
-.contact-row-flex > div > .p-inputtext,
-.contact-row-flex > div > p-dropdown,
-.contact-row-flex > div > .p-element {
-  width: 100%;
-}
-
-/* Right-align delete */
 .actions-cell {
   display: flex;
   justify-content: flex-end;
 }
 
-/* Stacks on very small screens */
-@media (max-width: 576px) {
+/* Barra inferior */
+.wizard-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.75rem 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.wizard-actions .spacer {
+  flex: 1;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .paciente-form {
+    width: calc(100% - 2rem);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
   .contact-row-flex {
     grid-template-columns: 1fr;
     grid-row-gap: 0.5rem;
   }
+
   .actions-cell {
     justify-content: flex-start;
   }
-}
-
-/* compat: regras antigas */
-.p-field { margin-bottom: 1rem; }
-
-.content {
-  /*display: flex;*/
-  margin: 82px auto 32px;
-  padding: 0 16px;
-  max-width: 960px;
-  flex-direction: column;
-  align-items: center;
 }

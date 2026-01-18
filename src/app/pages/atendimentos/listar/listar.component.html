@@ -1,69 +1,107 @@
-<div class="atendimentos-container">
-  <div class="p-grid">
-    <div class="p-col-12">
-
-      <!-- NEW: Novo atendimento button above patient fieldset -->
-      <div class="p-mb-3" style="text-align: right;">
-        <button pButton type="button" label="Novo atendimento" icon="pi pi-plus" class="p-button-sm" (click)="navigateToNovo()"></button>
+<div class="atendimentos-page">
+  <div class="atendimentos-list">
+    <!-- Header / Título + Ação -->
+    <div class="page-header">
+      <div class="title">
+        <h1>Atendimentos</h1>
+        <p>Consulte os atendimentos registrados e acesse os detalhes</p>
       </div>
 
-      <!-- Filters: patient combo and name search -->
-      <div class="p-grid p-ai-center p-mb-12">
-        <div class="p-col-12 p-md-6">
-          <fieldset class="p-fieldset" style="padding:0.5rem; border-radius:4px;">
-            <legend style="font-weight:600; padding:0 0.5rem;">Paciente</legend>
-            <p-dropdown
-              [options]="pacientes"
-              [(ngModel)]="selectedPatientId"
-              optionLabel="fullName"
-              optionValue="id"
-              placeholder="-- Todos --"
-              [filter]="true"
-              filterBy="fullName"
-              [showClear]="true"
-              [style]="{ width: '100%' }"
-              (ngModelChange)="onPatientFilterChange()">
-              <ng-template pTemplate="item" let-option>
-                <div>{{ option.fullName }}</div>
-              </ng-template>
-            </p-dropdown>
-          </fieldset>
+      <div class="header-actions">
+        <button
+          pButton
+          type="button"
+          label="Novo atendimento"
+          icon="pi pi-plus"
+          class="p-button-primary"
+          (click)="navigateToNovo()">
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <section class="filter-card">
+      <div class="filter-title">
+        <div class="icon"><i class="pi pi-filter"></i></div>
+        <div>
+          <h2>Filtros</h2>
+          <p>Selecione um paciente para filtrar os atendimentos</p>
         </div>
       </div>
 
-      <div *ngIf="loading" class="p-mt-3">
-        <p>Carregando atendimentos...</p>
+      <div class="filters">
+        <div class="filter-field">
+          <i class="pi pi-user"></i>
+          <p-dropdown
+            [options]="pacientes"
+            [(ngModel)]="selectedPatientId"
+            optionLabel="fullName"
+            optionValue="id"
+            placeholder="-- Todos --"
+            [filter]="true"
+            filterBy="fullName"
+            [showClear]="true"
+            [style]="{ width: '100%' }"
+            [styleClass]="'w-full'"
+            (ngModelChange)="onPatientFilterChange()">
+            <ng-template pTemplate="item" let-option>
+              <div>{{ option.fullName }}</div>
+            </ng-template>
+          </p-dropdown>
+        </div>
       </div>
+    </section>
 
-      <div *ngIf="error" class="p-mt-3 p-text-danger">
-        {{ error }}
-      </div>
+    <!-- Estados -->
+    <div *ngIf="loading" class="state-message">
+      <p>Carregando atendimentos...</p>
+    </div>
 
-      <p-table *ngIf="!loading && !error" [value]="atendimentos" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+    <div *ngIf="error" class="state-message state-error">
+      {{ error }}
+    </div>
+
+    <!-- Tabela -->
+    <section *ngIf="!loading && !error" class="table-card">
+      <p-table
+        [value]="atendimentos"
+        [paginator]="true"
+        [rows]="10"
+        [responsiveLayout]="'scroll'">
         <ng-template pTemplate="header">
           <tr>
             <th>ID</th>
             <th>Paciente</th>
             <th>Atendido em</th>
-            <th>Ações</th>
+            <th style="width: 110px;">Ações</th>
           </tr>
         </ng-template>
+
         <ng-template pTemplate="body" let-a>
           <tr>
             <td>{{ a.id }}</td>
             <td>{{ a.patient.fullName }}</td>
             <td>{{ a.attendedAt | date:'dd/MM/yyyy HH:mm' }}</td>
             <td>
-              <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-text" pTooltip="Ver atendimento" tooltipPosition="top" (click)="view(a)"></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-eye"
+                class="p-button-rounded p-button-text"
+                pTooltip="Ver atendimento"
+                tooltipPosition="top"
+                (click)="view(a)">
+              </button>
             </td>
           </tr>
         </ng-template>
+
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="5">Nenhum atendimento encontrado.</td>
+            <td colspan="4">Nenhum atendimento encontrado.</td>
           </tr>
         </ng-template>
       </p-table>
-    </div>
+    </section>
   </div>
 </div>

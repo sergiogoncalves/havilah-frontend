@@ -126,8 +126,26 @@
             </quill-editor>
           </section>
 
-          <!-- 3: Plano -->
+          <!-- 3: Anotações de enfermagem -->
           <section *ngIf="activeStepIndex === 2" class="step-panel">
+            <div class="step-title">
+              <div class="icon"><i class="pi pi-notes"></i></div>
+              <div>
+                <h2>Anotações de enfermagem</h2>
+                <p>Registre observações, sinais, orientações e intercorrências</p>
+              </div>
+            </div>
+
+            <quill-editor
+              name="anotacoesMedicas"
+              [(ngModel)]="atendimento.anotacoesMedicas"
+              [modules]="quillModules"
+              placeholder="Ex.: sinais vitais, orientações dadas, cuidados realizados, intercorrências...">
+            </quill-editor>
+          </section>
+
+          <!-- 4: Plano -->
+          <section *ngIf="activeStepIndex === 3" class="step-panel">
             <div class="step-title step-title-row">
               <div class="left">
                 <div class="icon"><i class="pi pi-clipboard"></i></div>
@@ -147,8 +165,8 @@
             </quill-editor>
           </section>
 
-          <!-- 4: Orçamento -->
-          <section *ngIf="activeStepIndex === 3" class="step-panel">
+          <!-- 5: Orçamento -->
+          <section *ngIf="activeStepIndex === 4" class="step-panel">
             <div class="step-title step-title-row">
               <div class="left">
                 <div class="icon"><i class="pi pi-wallet"></i></div>
@@ -168,8 +186,8 @@
             </quill-editor>
           </section>
 
-          <!-- 5: Receita -->
-          <section *ngIf="activeStepIndex === 4" class="step-panel">
+          <!-- 6: Receita -->
+          <section *ngIf="activeStepIndex === 5" class="step-panel">
             <div class="step-title step-title-row">
               <div class="left">
                 <div class="icon"><i class="pi pi-file-edit"></i></div>

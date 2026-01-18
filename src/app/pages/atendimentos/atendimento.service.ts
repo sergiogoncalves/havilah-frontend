@@ -11,7 +11,6 @@ import { environment } from '../../../environments/environment';
 export class AtendimentoService {
   // Base API paths
   private attendancesBase = `${environment.apiUrl}/attendances`;
-  private patientsBase = `${environment.apiUrl}/patients`;
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +18,8 @@ export class AtendimentoService {
     return {
       ...item,
       attendedAt: item.attendedAt,
-      retornarContato: item.retornarContato ?? null
+      retornarContato: item.retornarContato ?? null,
+      anotacoesMedicas: item.anotacoesMedicas ?? null
     };
   }
 
@@ -72,11 +72,12 @@ export class AtendimentoService {
     const url = `${this.attendancesBase}/attendances/${attendanceId}/content`;
 
     // Map payload properties to backend DTO field names
+    // OBS: apesar do campo/label na tela ser "anotações de enfermagem", o backend espera isso em `anotacoesMedicas`.
     const body: any = {
       descricaoSubjetiva: (payload as any).descricaoSubjetiva,
       objetivoPaciente: (payload as any).objetivoPaciente,
       planoTerapeutico: (payload as any).planoTerapeutico,
-      anotacoesMedicas: (payload as any).anotacoesMedicas,
+      anotacoesMedicas: (payload as any).anotacoesEnfermagem ?? (payload as any).anotacoesMedicas,
       terapiaRealizada: (payload as any).terapiaRealizada,
       orcamento: (payload as any).orcamento,
       receita: (payload as any).receita,
