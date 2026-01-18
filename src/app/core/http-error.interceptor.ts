@@ -10,8 +10,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        const msg = this.buildMessage(error);
-        this.alerts.error(msg, 'Erro de requisição');
+        // System info failing on startup is not critical; keep it silent.
+        if (!req.url.includes('/system/info')) {
+          const msg = this.buildMessage(error);
+          this.alerts.error(msg, 'Erro de requisição');
+        }
         return throwError(() => error);
       })
     );
@@ -24,4 +27,3 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     return `Status ${error.status}: ${error.statusText || 'Erro desconhecido'}`;
   }
 }
-

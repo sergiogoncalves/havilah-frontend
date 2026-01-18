@@ -392,6 +392,26 @@
     gap: 6px;
   }
   .mobile-submenu.open { display: flex; }
+
+  .system-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 16px;
+    font-weight: 500;
+    opacity: 0.95;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .system-info__profiles {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 767px) {
+    .main-menu { display: none; }
+    .system-info { display: none; }
+  }
 </style>
 
 <!-- Toolbar -->
@@ -422,6 +442,18 @@
   </nav>
 
   <div class="spacer"></div>
+
+  <ng-container *ngIf="systemInfo$ | async as info">
+    <div class="system-info" *ngIf="info">
+      <span>{{ info.applicationName }}</span>
+      <span>|</span>
+      <span>{{ info.environment }}</span>
+      <span class="system-info__profiles" *ngIf="info.activeProfiles?.length">
+        ({{ info.activeProfiles.join(', ') }})
+      </span>
+    </div>
+  </ng-container>
+
   <!-- Mobile menu overlay -->
   <div class="mobile-menu" [class.open]="menuOpen">
     <ng-container *ngFor="let item of menuItems; let last = last">

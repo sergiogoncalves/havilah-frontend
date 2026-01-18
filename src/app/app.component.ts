@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { SystemInfoService } from './core/system-info.service';
+import { SystemInfoResponseDto } from './models/system-info';
 
 @Component({
   selector: 'app-root',
@@ -7,9 +10,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private systemInfoService: SystemInfoService) {}
 
   title = 'havilah-frontend';
+
+  systemInfo$: Observable<SystemInfoResponseDto | null> = this.systemInfoService.getSystemInfo();
 
   // Centralized menu configuration - add/remove items here
   menuItems = [
