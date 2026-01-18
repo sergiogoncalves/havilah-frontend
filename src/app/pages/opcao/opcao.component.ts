@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -9,16 +9,13 @@ import { Paciente } from '../../models/paciente';
 import { Subscription } from 'rxjs';
 import { AtendimentoService } from '../atendimentos/atendimento.service';
 import { AttendanceFieldValuesByPatientResponseDto } from '../../models/attendance-field-values';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogModule } from 'primeng/dialog';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-opcao-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonModule, DropdownModule, FormsModule, DialogModule, QuillModule],
+  imports: [CommonModule, RouterModule, ButtonModule, DropdownModule, FormsModule, DialogModule],
   templateUrl: './opcao.component.html',
   styleUrls: ['./opcao.component.scss']
 })
@@ -45,11 +42,19 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
   valuesLoading = false;
   valuesError: string | null = null;
 
-  // Modal state
-  showDialog = false;
-  modalTitle = 'Documento';
-  modalHtml: SafeHtml | null = null;
-  @ViewChild('modalDocContainer') modalDocContainer?: ElementRef<HTMLDivElement>;
+  // Modal state for backend PDF preview
+  showPdfPreviewDialog = false;
+  pdfPreviewTitle = 'PDF';
+  pdfObjectUrl: string | null = null;
+  pdfSafeUrl: SafeResourceUrl | null = null;
+  pdfFileName = 'documento.pdf';
+
+  /** Apenas estes campos têm endpoint de PDF via enum no backend */
+  private enumPdfByBackendKey: Record<string, 'RECEITA' | 'ORCAMENTO' | 'PLANO_TERAPEUTICO'> = {
+    plano_terapeutico: 'PLANO_TERAPEUTICO',
+    orcamento: 'ORCAMENTO',
+    receita: 'RECEITA'
+  };
 
   private labels: Record<string, string> = {
     descricao_subjetiva: 'Descrição subjetiva',
@@ -138,49 +143,72 @@ export class OpcaoPageComponent implements OnInit, OnDestroy {
   }
 
   abrirModalComHtml(html: string, title?: string): void {
-    this.modalTitle = title || this.label || 'Documento';
-    // Trust backend-provided HTML
-    this.modalHtml = this.sanitizer.bypassSecurityTrustHtml(html);
-    this.showDialog = true;
-  }
-
-  async gerarPdfDoModal(): Promise<void> {
-    const element = this.modalDocContainer?.nativeElement;
-    if (!element) return;
-
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff'
-    });
-    const imgData = canvas.toDataURL('image/png');
-
-    const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    if (imgHeight <= pageHeight) {
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    } else {
-      let heightLeft = imgHeight;
-      let y = 0;
-      while (heightLeft > 0) {
-        pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-        if (heightLeft > 0) {
-          pdf.addPage();
-          y = -(imgHeight - heightLeft);
-        }
-      }
-    }
-
-    pdf.save((this.modalTitle || 'documento') + '.pdf');
+    // legacy removed; keep method as no-op to avoid template references (there are none now)
+    void html;
+    void title;
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.cleanupPdfObjectUrl();
+  }
+
+  /** true quando o campo atual suporta PDF via enum */
+  canShowPdfButton(): boolean {
+    const backendKey = this.toBackendKey(this.key);
+    return !!this.enumPdfByBackendKey[backendKey];
+  }
+
+  private getPdfEnumForCurrentKey(): 'RECEITA' | 'ORCAMENTO' | 'PLANO_TERAPEUTICO' | null {
+    const backendKey = this.toBackendKey(this.key);
+    return this.enumPdfByBackendKey[backendKey] ?? null;
+  }
+
+  abrirPdfBackend(attendanceId: number): void {
+    const tipo = this.getPdfEnumForCurrentKey();
+    if (!tipo) return;
+
+    this.pdfPreviewTitle = this.label || 'PDF';
+    this.pdfFileName = `${tipo.toLowerCase()}-${attendanceId}.pdf`;
+
+    this.atendimentoService.getReceitaPdf(attendanceId, tipo).subscribe({
+      next: (blob) => {
+        this.setPdfObjectUrl(blob);
+        this.showPdfPreviewDialog = true;
+      },
+      error: () => {
+        this.valuesError = 'Falha ao gerar PDF.';
+      }
+    });
+  }
+
+  baixarPdfPreview() {
+    if (!this.pdfObjectUrl) return;
+    const a = document.createElement('a');
+    a.href = this.pdfObjectUrl;
+    a.download = this.pdfFileName || 'documento.pdf';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  onHidePdfPreview() {
+    this.showPdfPreviewDialog = false;
+    this.cleanupPdfObjectUrl();
+  }
+
+  private setPdfObjectUrl(blob: Blob) {
+    this.cleanupPdfObjectUrl();
+    this.pdfObjectUrl = URL.createObjectURL(blob);
+    this.pdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.pdfObjectUrl);
+  }
+
+  private cleanupPdfObjectUrl() {
+    if (this.pdfObjectUrl) {
+      URL.revokeObjectURL(this.pdfObjectUrl);
+      this.pdfObjectUrl = null;
+    }
+    this.pdfSafeUrl = null;
   }
 }
