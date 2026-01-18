@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SystemInfoService } from './core/system-info.service';
 import { SystemInfoResponseDto } from './models/system-info';
+import { FRONTEND_VERSION } from '../environments/frontend-version';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,8 @@ export class AppComponent {
   constructor(private router: Router, private systemInfoService: SystemInfoService) {}
 
   title = 'havilah-frontend';
+
+  readonly frontendVersion = FRONTEND_VERSION;
 
   systemInfo$: Observable<SystemInfoResponseDto | null> = this.systemInfoService.getSystemInfo();
 

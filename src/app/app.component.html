@@ -448,6 +448,12 @@
       <span>{{ info.applicationName }}</span>
       <span>|</span>
       <span>{{ info.environment }}</span>
+      <span>|</span>
+      <span>FE v{{ frontendVersion }}</span>
+      <ng-container *ngIf="info.versao">
+        <span>|</span>
+        <span>BE v{{ info.versao }}</span>
+      </ng-container>
       <span class="system-info__profiles" *ngIf="info.activeProfiles?.length">
         ({{ info.activeProfiles.join(', ') }})
       </span>
