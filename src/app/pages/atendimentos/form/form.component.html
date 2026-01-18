@@ -1,41 +1,7 @@
 <div class="atendimentos-page">
   <form #atForm="ngForm" class="atendimento-form">
 
-    <!-- Barra sticky (topo centralizado) -->
-    <div class="actions-bar" *ngIf="!loading">
-      <button
-        pButton
-        type="button"
-        label="Salvar"
-        icon="pi pi-check"
-        class="p-button-success"
-        (click)="save(atForm)"
-        [disabled]="saving">
-      </button>
-
-      <button
-        pButton
-        type="button"
-        label="Novo"
-        icon="pi pi-plus"
-        class="p-button-info"
-        (click)="newRecord(atForm)"
-        [disabled]="saving">
-      </button>
-
-      <button
-        pButton
-        type="button"
-        label="Voltar"
-        icon="pi pi-arrow-left"
-        class="p-button-secondary"
-        (click)="back(atForm)">
-      </button>
-    </div>
-
-    <!-- Conteúdo rolável -->
     <div class="form-scroll">
-
       <div *ngIf="loading && !atendimento">Carregando...</div>
       <div *ngIf="error" class="p-text-danger">{{ error }}</div>
 
@@ -43,130 +9,222 @@
         <div *ngIf="!pacientesLoaded" class="p-text-info">Carregando pacientes...</div>
         <div *ngIf="pacientesLoaded && pacientes.length === 0" class="p-text-warning">Nenhum paciente disponível.</div>
 
-        <!-- Paciente -->
-        <div class="form-field">
-          <label>Paciente </label>
+        <!-- Header / Resumo -->
+        <div class="page-header">
+          <div class="title">
+            <h1>Registro de Atendimento</h1>
+            <p>Preencha os campos para documentar o atendimento</p>
+          </div>
 
-          <p-dropdown
-            #patientDropdown
-            name="patientId"
-            [(ngModel)]="atendimento.patientId"
-            [options]="pacientes"
-            optionLabel="fullName"
-            optionValue="id"
-            placeholder="-- selecione --"
-            [filter]="true"
-            filterBy="fullName"
-            [showClear]="true"
-            [disabled]="isEditMode"
-            [style]="{ width: '100%' }"
-            [styleClass]="'w-full'"
-            [virtualScroll]="pacientes.length > 10"
-            (onShow)="onDropdownShow()"
-            (onHide)="onDropdownHide()">
-          </p-dropdown>
+          <div class="header-card">
+            <div class="avatar" aria-hidden="true">
+              {{ (atendimento.patient?.fullName || '').slice(0, 1) || 'P' }}
+            </div>
+
+            <div class="header-fields">
+              <div class="header-field">
+                <i class="pi pi-user"></i>
+                <p-dropdown
+                  #patientDropdown
+                  name="patientId"
+                  [(ngModel)]="atendimento.patientId"
+                  [options]="pacientes"
+                  optionLabel="fullName"
+                  optionValue="id"
+                  placeholder="Selecione o paciente"
+                  [filter]="true"
+                  filterBy="fullName"
+                  [showClear]="true"
+                  [disabled]="isEditMode"
+                  [style]="{ width: '100%' }"
+                  [styleClass]="'w-full'"
+                  [virtualScroll]="pacientes.length > 10"
+                  (onShow)="onDropdownShow()"
+                  (onHide)="onDropdownHide()">
+                </p-dropdown>
+              </div>
+
+              <div class="header-field">
+                <i class="pi pi-calendar"></i>
+                <p-calendar
+                  name="attendedAtLocal"
+                  [(ngModel)]="attendedAtLocal"
+                  [showTime]="true"
+                  hourFormat="24"
+                  [touchUI]="true"
+                  dateFormat="dd/mm/yy"
+                  [style]="{ width: '100%' }"
+                  [styleClass]="'w-full'">
+                </p-calendar>
+              </div>
+
+              <!-- Retornar contato (data sem horário) -->
+              <div class="header-field">
+                <i class="pi pi-replay"></i>
+                <p-calendar
+                  name="retornarContatoLocal"
+                  [(ngModel)]="retornarContatoLocal"
+                  [showTime]="false"
+                  [touchUI]="true"
+                  dateFormat="dd/mm/yy"
+                  placeholder="Retornar contato"
+                  [style]="{ width: '100%' }"
+                  [styleClass]="'w-full'">
+                </p-calendar>
+              </div>
+            </div>
+          </div>
 
           <div *ngIf="atForm.submitted && isPatientInvalid()" class="p-text-danger">
             Paciente é obrigatório.
           </div>
-
           <small *ngIf="isEditMode" class="hint">
             O paciente não pode ser alterado durante a edição.
           </small>
         </div>
 
-        <!-- Atendido em -->
-        <div class="form-field">
-          <label>Atendido em</label>
-          <p-calendar
-            name="attendedAtLocal"
-            [(ngModel)]="attendedAtLocal"
-            [showTime]="true"
-            hourFormat="24"
-            [touchUI]="true"
-            dateFormat="dd/mm/yy"
-            [style]="{ width: '100%' }"
-            [styleClass]="'w-full'">
-          </p-calendar>
+        <!-- Steps -->
+        <div class="steps-card">
+          <p-steps [model]="steps" [activeIndex]="activeStepIndex" [readonly]="false"></p-steps>
         </div>
 
-        <!-- Novo campo: Retornar contato (LocalDate) -->
-        <div class="form-field">
-          <label>Retornar contato</label>
-          <p-calendar
-            name="retornarContatoLocal"
-            [(ngModel)]="retornarContatoLocal"
-            [showTime]="false"
-            [touchUI]="true"
-            dateFormat="dd/mm/yy"
-            [style]="{ width: '100%' }"
-            [styleClass]="'w-full'">
-          </p-calendar>
-          <small class="hint">Selecione uma data para retorno de contato (sem horário).</small>
-        </div>
+        <!-- Conteúdo das etapas -->
+        <div class="step-content">
+          <!-- 1: Subjetivo -->
+          <section *ngIf="activeStepIndex === 0" class="step-panel">
+            <div class="step-title">
+              <div class="icon"><i class="pi pi-file"></i></div>
+              <div>
+                <h2>Descrição Subjetiva</h2>
+                <p>Registre as queixas e sintomas relatados pelo paciente</p>
+              </div>
+            </div>
 
-        <!-- Editor -->
-        <div class="form-field form-editor">
-          <label>Descrição Subjetiva - Relato do Paciente</label>
-          <quill-editor
-            name="relatoPaciente"
-            [(ngModel)]="atendimento.descricaoSubjetiva"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
+            <quill-editor
+              name="relatoPaciente"
+              [(ngModel)]="atendimento.descricaoSubjetiva"
+              [modules]="quillModules"
+              placeholder="Descreva as queixas principais do paciente, sintomas relatados, histórico relevante...">
+            </quill-editor>
+          </section>
 
-        <div class="form-field form-editor">
-          <label>Objetivo do paciente</label>
-          <quill-editor
-            name="objetivoPaciente"
-            [(ngModel)]="atendimento.objetivoPaciente"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
+          <!-- 2: Objetivo -->
+          <section *ngIf="activeStepIndex === 1" class="step-panel">
+            <div class="step-title">
+              <div class="icon"><i class="pi pi-bullseye"></i></div>
+              <div>
+                <h2>Objetivo do paciente</h2>
+                <p>O que o paciente espera alcançar?</p>
+              </div>
+            </div>
 
-        <div class="form-field form-editor">
-          <div class="field-header">
-            <label>Plano Terapêutico</label>
-            <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('planoTerapeutico', 'Plano terapêutico')"></button>
-          </div>
-          <quill-editor
-            name="planoTerapeutico"
-            [(ngModel)]="atendimento.planoTerapeutico"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
+            <quill-editor
+              name="objetivoPaciente"
+              [(ngModel)]="atendimento.objetivoPaciente"
+              [modules]="quillModules"
+              placeholder="O objetivo do paciente é...">
+            </quill-editor>
+          </section>
 
-        <div class="form-field form-editor">
-          <div class="field-header">
-            <label>Orçamento</label>
-            <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('orcamento', 'Orçamento')"></button>
-          </div>
-          <quill-editor
-            name="orcamento"
-            [(ngModel)]="atendimento.orcamento"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
+          <!-- 3: Plano -->
+          <section *ngIf="activeStepIndex === 2" class="step-panel">
+            <div class="step-title step-title-row">
+              <div class="left">
+                <div class="icon"><i class="pi pi-clipboard"></i></div>
+                <div>
+                  <h2>Plano terapêutico</h2>
+                  <p>Conduta, intervenções e recomendações</p>
+                </div>
+              </div>
+              <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('planoTerapeutico', 'Plano terapêutico')"></button>
+            </div>
 
-        <!-- Novo campo Receita -->
-        <div class="form-field form-editor">
-          <div class="field-header">
-            <label>Receita</label>
-            <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('receita', 'Receita')"></button>
-          </div>
-          <quill-editor
-            name="receita"
-            [(ngModel)]="atendimento.receita"
-            [modules]="quillModules"
-            placeholder="Digite...">
-          </quill-editor>
-        </div>
+            <quill-editor
+              name="planoTerapeutico"
+              [(ngModel)]="atendimento.planoTerapeutico"
+              [modules]="quillModules"
+              placeholder="Defina o plano terapêutico...">
+            </quill-editor>
+          </section>
 
+          <!-- 4: Orçamento -->
+          <section *ngIf="activeStepIndex === 3" class="step-panel">
+            <div class="step-title step-title-row">
+              <div class="left">
+                <div class="icon"><i class="pi pi-wallet"></i></div>
+                <div>
+                  <h2>Orçamento</h2>
+                  <p>Valores, itens e condições</p>
+                </div>
+              </div>
+              <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('orcamento', 'Orçamento')"></button>
+            </div>
+
+            <quill-editor
+              name="orcamento"
+              [(ngModel)]="atendimento.orcamento"
+              [modules]="quillModules"
+              placeholder="Detalhe o orçamento...">
+            </quill-editor>
+          </section>
+
+          <!-- 5: Receita -->
+          <section *ngIf="activeStepIndex === 4" class="step-panel">
+            <div class="step-title step-title-row">
+              <div class="left">
+                <div class="icon"><i class="pi pi-file-edit"></i></div>
+                <div>
+                  <h2>Receita</h2>
+                  <p>Prescrição e orientações</p>
+                </div>
+              </div>
+              <button pButton type="button" class="p-button-text" icon="pi pi-file-pdf" label="PDF" (click)="abrirDocumentoComCampo('receita', 'Receita')"></button>
+            </div>
+
+            <quill-editor
+              name="receita"
+              [(ngModel)]="atendimento.receita"
+              [modules]="quillModules"
+              placeholder="Digite a receita...">
+            </quill-editor>
+          </section>
+        </div>
       </ng-container>
+    </div>
+
+    <!-- Barra inferior (ações do wizard) -->
+    <div class="wizard-actions" *ngIf="!loading">
+      <button
+        pButton
+        type="button"
+        label="Anterior"
+        icon="pi pi-angle-left"
+        class="p-button-outlined"
+        (click)="prevStep()"
+        [disabled]="isFirstStep()">
+      </button>
+
+      <div class="spacer"></div>
+
+      <button
+        pButton
+        type="button"
+        label="Salvar Rascunho"
+        icon="pi pi-save"
+        class="p-button-outlined"
+        (click)="saveDraft(atForm)"
+        [disabled]="saving">
+      </button>
+
+      <button
+        pButton
+        type="button"
+        [label]="isLastStep() ? 'Salvar' : 'Próximo'"
+        [icon]="isLastStep() ? 'pi pi-check' : 'pi pi-angle-right'"
+        class="p-button-primary"
+        (click)="isLastStep() ? saveFinal(atForm) : nextStep()"
+        [disabled]="saving">
+      </button>
     </div>
   </form>
 

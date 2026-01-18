@@ -14,6 +14,7 @@ import { ConfirmationService } from 'primeng/api';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-atendimento-form',
@@ -56,6 +57,16 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   modalHtml: SafeHtml | null = null;
   @ViewChild('modalDocContainer') modalDocContainer?: ElementRef<HTMLDivElement>;
 
+  // Wizard/steps
+  steps: MenuItem[] = [
+    { label: 'Subjetivo' },
+    { label: 'Objetivo' },
+    { label: 'Plano' },
+    { label: 'Orçamento' },
+    { label: 'Receita' }
+  ];
+  activeStepIndex = 0;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -71,6 +82,12 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     // Apply global pt-BR translation for PrimeNG components
     this.primengConfig.setTranslation(primengPtBr);
+
+    // Steps click handler
+    this.steps = this.steps.map((s, idx) => ({
+      ...s,
+      command: () => this.goToStep(idx)
+    }));
 
     this.loadPacientes();
 
@@ -302,7 +319,17 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     // Callback quando dropdown fecha
   }
 
-  save(form?: NgForm) {
+  /** Salva e permanece no formulário (rascunho) */
+  saveDraft(form?: NgForm) {
+    return this.persist(form, { navigateAfterSave: false });
+  }
+
+  /** Salva e volta para a listagem */
+  saveFinal(form?: NgForm) {
+    return this.persist(form, { navigateAfterSave: true });
+  }
+
+  private persist(form: NgForm | undefined, opts: { navigateAfterSave: boolean }) {
     if (!this.atendimento) return;
 
     this.saving = true;
@@ -320,7 +347,6 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Convert selected Date to ISO
     const iso = this.dateToIso(this.attendedAtLocal);
     const retornarContatoLocalDate = this.dateToLocalDate(this.retornarContatoLocal);
 
@@ -343,15 +369,32 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
       : this.service.create(payload);
 
     obs.pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
+      next: (saved: any) => {
         this.saving = false;
-        this.alerts.success('Atendimento salvo com sucesso');
-        this.router.navigate(['/atendimentos']);
+
+        // Se for create, é comum o backend devolver o registro com id.
+        // Mantemos o usuário na tela com o id atualizado para próximos saves.
+        if (!this.isEditMode && saved && typeof saved === 'object' && 'id' in saved) {
+          const newId = Number((saved as any).id);
+          if (!isNaN(newId) && newId > 0) {
+            this.isEditMode = true;
+            this.atendimento = { ...(this.atendimento as Atendimento), ...(saved as Atendimento) };
+          }
+        }
+
+        this.alerts.success(opts.navigateAfterSave ? 'Atendimento salvo com sucesso' : 'Rascunho salvo');
+
+        if (opts.navigateAfterSave) {
+          this.router.navigate(['/atendimentos']);
+        } else {
+          this.cdr.markForCheck();
+        }
       },
       error: () => {
         this.error = 'Falha ao salvar atendimento.';
         this.saving = false;
         this.alerts.error('Falha ao salvar atendimento');
+        this.cdr.markForCheck();
       }
     });
   }
@@ -408,5 +451,27 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     pdf.save((this.modalTitle || 'documento') + '.pdf');
+  }
+
+  goToStep(index: number) {
+    const next = Math.max(0, Math.min(index, this.steps.length - 1));
+    this.activeStepIndex = next;
+    this.cdr.markForCheck();
+  }
+
+  prevStep() {
+    this.goToStep(this.activeStepIndex - 1);
+  }
+
+  nextStep() {
+    this.goToStep(this.activeStepIndex + 1);
+  }
+
+  isFirstStep(): boolean {
+    return this.activeStepIndex <= 0;
+  }
+
+  isLastStep(): boolean {
+    return this.activeStepIndex >= this.steps.length - 1;
   }
 }

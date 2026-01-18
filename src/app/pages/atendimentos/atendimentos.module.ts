@@ -16,6 +16,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
+import { StepsModule } from 'primeng/steps';
 
 
 
@@ -34,7 +35,8 @@ import { DialogModule } from 'primeng/dialog';
     DropdownModule,
     CalendarModule,
     ConfirmDialogModule,
-    DialogModule
+    DialogModule,
+    StepsModule
   ],
   providers: [ConfirmationService]
 })
