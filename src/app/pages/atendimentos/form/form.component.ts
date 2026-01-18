@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, ChangeD
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { AtendimentoService } from '../atendimento.service';
 import { Atendimento } from '../../../models/atendimento';
 import { Paciente } from '../../../models/paciente';
@@ -11,7 +11,7 @@ import { PrimeNGConfig } from 'primeng/api';
 import { AlertService } from '../../../alert.service';
 import { primengPtBr } from '../../../core/locale/primeng-ptbr';
 import { ConfirmationService } from 'primeng/api';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { MenuItem } from 'primeng/api';
@@ -51,11 +51,18 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
     ]
   };
 
-  // Modal state for PDF preview
+  // Modal state for PDF preview (HTML legacy)
   showDialog = false;
   modalTitle: string = 'Documento';
   modalHtml: SafeHtml | null = null;
   @ViewChild('modalDocContainer') modalDocContainer?: ElementRef<HTMLDivElement>;
+
+  // Modal state for backend PDF preview
+  showPdfPreviewDialog = false;
+  pdfPreviewTitle = 'PDF';
+  pdfObjectUrl: string | null = null;
+  pdfSafeUrl: SafeResourceUrl | null = null;
+  pdfFileName = 'documento.pdf';
 
   // Wizard/steps
   steps: MenuItem[] = [
@@ -122,6 +129,7 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.cleanupPdfObjectUrl();
   }
 
   ngAfterViewInit(): void {
@@ -386,6 +394,11 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.alerts.success(opts.navigateAfterSave ? 'Atendimento salvo com sucesso' : 'Rascunho salvo');
 
+        // Se permaneceu na tela, marca o form como "sem alterações"
+        if (!opts.navigateAfterSave && form) {
+          form.form.markAsPristine();
+        }
+
         if (opts.navigateAfterSave) {
           this.router.navigate(['/atendimentos']);
         } else {
@@ -399,6 +412,137 @@ export class FormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  /**
+   * Fluxo novo: salva (se necessário) e abre o PDF vindo do backend em um modal fullscreen.
+   */
+  abrirPdfBackend(tipo: 'RECEITA' | 'ORCAMENTO' | 'PLANO_TERAPEUTICO', titulo: string, form?: NgForm) {
+    if (!this.atendimento) return;
+
+    if (this.isPatientInvalid()) {
+      this.error = 'Paciente é obrigatório.';
+      this.alerts.error('Paciente é obrigatório');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const needsSave = !this.isEditMode || this.atendimento.id === 0 || !!(form && form.dirty);
+
+    const openPdf = (attendanceId: number) => {
+      this.pdfPreviewTitle = titulo;
+      this.pdfFileName = `${tipo.toLowerCase()}-${attendanceId}.pdf`;
+
+      this.service.getReceitaPdf(attendanceId, tipo)
+        .pipe(
+          takeUntil(this.destroy$),
+          finalize(() => this.cdr.markForCheck())
+        )
+        .subscribe({
+          next: (blob) => {
+            this.setPdfObjectUrl(blob);
+            this.showPdfPreviewDialog = true;
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.alerts.error('Falha ao gerar PDF');
+            this.cdr.markForCheck();
+          }
+        });
+    };
+
+    if (!needsSave) {
+      openPdf(this.atendimento.id);
+      return;
+    }
+
+    // Salva primeiro e só então abre o PDF.
+    this.saving = true;
+    this.error = null;
+
+    const iso = this.dateToIso(this.attendedAtLocal);
+    const retornarContatoLocalDate = this.dateToLocalDate(this.retornarContatoLocal);
+
+    const payload: Partial<Atendimento> = {
+      id: this.atendimento.id,
+      patientId: this.atendimento.patientId,
+      attendedAt: iso ?? this.atendimento.attendedAt,
+      descricaoSubjetiva: this.atendimento.descricaoSubjetiva,
+      objetivoPaciente: this.atendimento.objetivoPaciente,
+      planoTerapeutico: this.atendimento.planoTerapeutico,
+      anotacoesMedicas: this.atendimento.anotacoesMedicas,
+      terapiaRealizada: this.atendimento.terapiaRealizada,
+      orcamento: this.atendimento.orcamento,
+      receita: this.atendimento.receita,
+      retornarContato: retornarContatoLocalDate ?? this.atendimento.retornarContato ?? null
+    };
+
+    const save$ = (this.isEditMode && this.atendimento.id !== 0)
+      ? this.service.update(payload)
+      : this.service.create(payload);
+
+    save$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (saved: any) => {
+        this.saving = false;
+
+        // Atualiza estado local/id
+        if (saved && typeof saved === 'object' && 'id' in saved) {
+          const newId = Number((saved as any).id);
+          if (!isNaN(newId) && newId > 0) {
+            this.isEditMode = true;
+            this.atendimento = { ...(this.atendimento as Atendimento), ...(saved as Atendimento) };
+
+            if (form) {
+              form.form.markAsPristine();
+            }
+
+            this.alerts.success('Atendimento salvo');
+            openPdf(newId);
+            return;
+          }
+        }
+
+        this.alerts.error('Não foi possível obter o ID do atendimento salvo.');
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.error = 'Falha ao salvar atendimento.';
+        this.saving = false;
+        this.alerts.error('Falha ao salvar atendimento');
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  baixarPdfPreview() {
+    if (!this.pdfObjectUrl) return;
+    const a = document.createElement('a');
+    a.href = this.pdfObjectUrl;
+    a.download = this.pdfFileName || 'documento.pdf';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  onHidePdfPreview() {
+    this.showPdfPreviewDialog = false;
+    this.cleanupPdfObjectUrl();
+    this.cdr.markForCheck();
+  }
+
+  private setPdfObjectUrl(blob: Blob) {
+    this.cleanupPdfObjectUrl();
+    this.pdfObjectUrl = URL.createObjectURL(blob);
+    this.pdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.pdfObjectUrl);
+  }
+
+  private cleanupPdfObjectUrl() {
+    if (this.pdfObjectUrl) {
+      URL.revokeObjectURL(this.pdfObjectUrl);
+      this.pdfObjectUrl = null;
+    }
+    this.pdfSafeUrl = null;
   }
 
   // Helper to open the Documento viewer in a modal for a given field

@@ -11,6 +11,7 @@ import { environment } from '../../../environments/environment';
 export class AtendimentoService {
   // Base API paths
   private attendancesBase = `${environment.apiUrl}/attendances`;
+  private receitasBase = `${environment.apiUrl}/receitas`;
 
   constructor(private http: HttpClient) { }
 
@@ -92,5 +93,16 @@ export class AtendimentoService {
   listFieldValuesByPatient(patientId: number, field: string): Observable<AttendanceFieldValuesByPatientResponseDto> {
     const url = `${this.attendancesBase}/patients/${patientId}/attendances/fields/${field}`;
     return this.http.get<AttendanceFieldValuesByPatientResponseDto>(url);
+  }
+
+  /**
+   * Busca o PDF renderizado no backend.
+   * Backend: GET /api/receitas/{attendanceId}/pdf?tipo=RECEITA|ORCAMENTO|PLANO_TERAPEUTICO
+   */
+  getReceitaPdf(attendanceId: number, tipo: 'RECEITA' | 'ORCAMENTO' | 'PLANO_TERAPEUTICO'): Observable<Blob> {
+    const url = `${this.receitasBase}/${attendanceId}/pdf`;
+    const params = new HttpParams().set('tipo', tipo);
+
+    return this.http.get(url, { params, responseType: 'blob' });
   }
 }
