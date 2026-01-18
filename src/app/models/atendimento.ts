@@ -8,6 +8,11 @@ export interface Atendimento {
   objetivoPaciente: string | null;
   planoTerapeutico: string | null;
   anotacoesMedicas: string | null;
+  /**
+   * Alias usado na tela ("Anotações de enfermagem").
+   * O backend persiste/espera em `anotacoesMedicas`.
+   */
+  anotacoesEnfermagem?: string | null;
   terapiaRealizada: string | null;
   orcamento: string | null;
   receita: string | null;
